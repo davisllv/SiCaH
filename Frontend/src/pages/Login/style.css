@@ -1,0 +1,29 @@
+.login-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.form-container {
+  border: 2px solid #000;
+}
+
+form {
+  padding: 30px 80px 0 80px;
+  width: 400px;
+}
+
+.submit-container>button {
+  width: 100%;
+}
+
+.recover-password-link,
+.register-link {
+  margin: 1em 0;
+  color: #000;
+  display: block;
+  text-decoration: none;
+}
+
+.register-link {
+  text-align: center;
+}

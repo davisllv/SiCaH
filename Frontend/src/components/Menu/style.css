@@ -1,0 +1,15 @@
+.menu-container {
+  width: 300px;
+  height: 100vh;
+  border: 2px solid black;
+  padding: 0;
+  margin: 0;
+  font-weight: 600;
+}
+
+.link {
+  border-bottom: 1px solid black;
+  text-decoration: none;
+  color: black;
+  padding: 10px 0;
+}
