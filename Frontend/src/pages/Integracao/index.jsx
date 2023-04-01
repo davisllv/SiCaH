@@ -1,24 +1,63 @@
-export default function Integracao() {
-  return (
-    <Form>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Email address</Form.Label>
-        <Form.Control type="email" placeholder="Enter email" />
-        <Form.Text className="text-muted">
-          We'll never share your email with anyone else.
-        </Form.Text>
-      </Form.Group>
+import { useCallback, useState } from "react";
+import "./style.css";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { PlugFill } from "react-bootstrap-icons";
+import { Spinner } from "react-bootstrap";
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form>
+export default function Integracao() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConectarBancoDados = useCallback(() => {
+    setIsLoading(true);
+  }, []);
+
+  return (
+    <div className="integration-container">
+      <h2>Integração</h2>
+      <Form style={{ width: "60%", padding: 0 }}>
+        <Form.Group className="mb-3" controlId="enderecoBancoDados">
+          <Form.Label>Endereço do Banco de Dados</Form.Label>
+          <Form.Control type="text" placeholder="Enter email" />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="usuario">
+          <Form.Label>Usuário</Form.Label>
+          <Form.Control type="text" placeholder="Usuário" />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" placeholder="Password" />
+        </Form.Group>
+
+        <div className="d-grid gap-2">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleConectarBancoDados}
+          >
+            {isLoading ? (
+              <>
+                <>
+                  <Spinner
+                    animation="border"
+                    role="status"
+                    size="sm"
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  Conectando...
+                </>
+              </>
+            ) : (
+              <>
+                <PlugFill />
+                Conectar
+              </>
+            )}
+          </Button>
+        </div>
+      </Form>
+    </div>
   );
 }
