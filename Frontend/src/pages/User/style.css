@@ -16,3 +16,10 @@
 .empty-result img {
   width: 300px;
 }
+
+.actions {
+  height: 100%;
+  display: flex;
+  padding: 12px !important;
+  justify-content: space-around;
+}

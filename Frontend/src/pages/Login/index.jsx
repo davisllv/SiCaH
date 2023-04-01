@@ -51,7 +51,7 @@ export default function Login() {
 
   return (
     <div className="login-container dflex justify-content-center align-items-center flex-column">
-      <div className="form-container">
+      <div className="login-form-container">
         <Form onSubmit={formik.handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Usuário</Form.Label>

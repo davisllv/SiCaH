@@ -1,0 +1,11 @@
+.edit-form-container {
+  width: 50%;
+}
+
+.user-container>div>form {
+  width: 40%;
+}
+
+.user-container>div>form>.password-field {
+  width: 49%;
+}

@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import React from 'react';
 import Menu from './components/Menu';
 import User from './pages/User';
+import EditUser from './pages/User/Edit';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="" element={<Home />} />
         <Route path="user" element={<User />}></Route>
+        <Route path="user/create" element={<EditUser />}></Route>
       </Routes>
     </>
   );
