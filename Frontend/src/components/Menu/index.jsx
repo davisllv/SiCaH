@@ -13,7 +13,7 @@ export default function Menu() {
         <Link className="link">Relatórios</Link>
         <Link className="link">Análisar Imagem</Link>
         <Link className="link">Equipamentos</Link>
-        <Link className="link">Usuários</Link>
+        <Link className="link" to={'user'}>Usuários</Link>
         <Link className="link">Integrações</Link>
       </div >
     );

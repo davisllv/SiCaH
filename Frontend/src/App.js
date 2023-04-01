@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import React from 'react';
 import Menu from './components/Menu';
+import User from './pages/User';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="login" element={<Login />} />
         <Route path="" element={<Home />} />
+        <Route path="user" element={<User />}></Route>
       </Routes>
     </>
   );
