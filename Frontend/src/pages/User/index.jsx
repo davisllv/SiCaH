@@ -23,7 +23,7 @@ export default function User() {
   }
 
   const navigateToCreate = () => {
-    navigation('/create');
+    navigation('create');
   }
 
   const columns = [

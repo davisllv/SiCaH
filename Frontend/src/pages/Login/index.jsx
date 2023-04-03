@@ -1,62 +1,77 @@
+import './style.css';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input, Spin } from 'antd';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 export default function Login() {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const onFinish = (values) => {
+    setIsLoading(true);
     console.log('Received values of form: ', values);
+    setTimeout(() => {
+      setIsLoading(false);
+      navigate("/");
+    }, 4000);
   };
+
   return (
-    <div className="login-container">
+    <div className="login-container dflex justify-content-center align-items-center">
       <Form
         layout='vertical'
-        name="normal_login"
         className="login-form"
-        initialValues={{
-          remember: true,
-        }}
         onFinish={onFinish}
+        disabled={isLoading}
+        size="large"
       >
         <Form.Item
-          label="Usuário"
           name="username"
           rules={[
             {
               required: true,
-              message: 'Please input your Username!',
+              message: 'Digite seu email',
             },
           ]}
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} />
+          <Input prefix={<UserOutlined />}
+            type="email"
+            placeholder="Email" />
         </Form.Item>
         <Form.Item
-          label="Senha"
           name="password"
           rules={[
             {
               required: true,
-              message: 'Please input your Password!',
+              message: 'Digite sua senha',
             },
           ]}
         >
           <Input
-            prefix={<LockOutlined className="site-form-item-icon" />}
+            prefix={<LockOutlined />}
             type="password"
+            placeholder="Senha"
           />
         </Form.Item>
         <Form.Item>
-          <Form.Item name="remember" valuePropName="checked" noStyle>
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-
-          <a className="login-form-forgot" href="">
-            Forgot password
+          <a href="/">
+            Recuperar senha
           </a>
         </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
-          </Button>
-          Or <a href="">register now!</a>
+        <Form.Item className="dflex justify-content-center">
+          {!isLoading &&
+            <Button htmlType="submit">
+              Entrar
+            </Button>
+          }
+          {isLoading &&
+            <Spin />
+          }
+        </Form.Item>
+        <Form.Item className="dflex justify-content-center">
+          Gostaria de se cadastrar?
+          <Button type="link" style={{ paddingLeft: '2px' }}>Clique aqui</Button>
         </Form.Item>
       </Form>
     </div>
