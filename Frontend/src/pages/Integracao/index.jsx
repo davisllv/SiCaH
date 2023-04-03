@@ -1,24 +1,61 @@
-export default function Integracao() {
-  return (
-    <Form>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Email address</Form.Label>
-        <Form.Control type="email" placeholder="Enter email" />
-        <Form.Text className="text-muted">
-          We'll never share your email with anyone else.
-        </Form.Text>
-      </Form.Group>
+import "./style.css";
+import { useCallback, useState } from "react";
+import { Form, Button, Spin, Radio, Input } from "antd";
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form>
+export default function Integracao() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [form] = Form.useForm();
+
+  const handleConectarBancoDados = useCallback(() => {
+    setIsLoading(true);
+  }, []);
+
+  return (
+    <div className="integration-container">
+      <h2>Integração</h2>
+      <Form style={{ width: "60%", padding: 0 }}
+        layout="vertical"
+        form={form}
+      >
+        <Form.Item label="Endereço do Banco de Dados">
+          <Input type="text" placeholder="Enter email" />
+        </Form.Item>
+
+        <Form.Item label="Usuário">
+          <Input type="text" placeholder="Usuário" />
+        </Form.Item>
+
+        <Form.Item label="Password">
+          <Input type="password" placeholder="Password" />
+        </Form.Item>
+
+        <div className="d-grid gap-2">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleConectarBancoDados}
+          >
+            {isLoading ? (
+              <>
+                <>
+                  <Spin
+                    animation="border"
+                    role="status"
+                    size="sm"
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  Conectando...
+                </>
+              </>
+            ) : (
+              <>
+                {/* <PlugFill /> */}
+                Conectar
+              </>
+            )}
+          </Button>
+        </div>
+      </Form>
+    </div>
   );
 }

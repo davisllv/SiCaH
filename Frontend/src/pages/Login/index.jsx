@@ -1,93 +1,64 @@
-import './style.css';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useState } from 'react';
-import { Spinner } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input } from 'antd';
 export default function Login() {
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const schema = yup.object().shape({
-    username: yup.string().required(),
-    password: yup.string().required(),
-  });
-
-  const validate = values => {
-    const errors = {};
-    if (!values.username) {
-      errors.username = 'Insira seu usuário';
-    } else {
-      if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.username)) {
-        errors.username = 'Insira um usuário válido';
-      }
-    }
-
-    if (!values.password) {
-      errors.password = 'Insira sua senha';
-    }
-
-    return errors;
-  }
-
-  const formik = useFormik({
-    initialValues: {
-      username: '',
-      password: '',
-    },
-    validate,
-    validationSchema: schema,
-    onSubmit: async values => {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate('/');
-      }, 5000);
-      // chamar API para efetuar autenticação
-    },
-  })
-
+  const onFinish = (values) => {
+    console.log('Received values of form: ', values);
+  };
   return (
-    <div className="login-container dflex justify-content-center align-items-center flex-column">
-      <div className="login-form-container">
-        <Form onSubmit={formik.handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Usuário</Form.Label>
-            <Form.Control type="email" name="username" onChange={formik.handleChange} value={formik.values.username} />
-            {formik.errors.username &&
-              <Form.Text className="text-danger">
-                {formik.errors.username}
-              </Form.Text>
-            }
-          </Form.Group>
+    <div className="login-container">
+      <Form
+        layout='vertical'
+        name="normal_login"
+        className="login-form"
+        initialValues={{
+          remember: true,
+        }}
+        onFinish={onFinish}
+      >
+        <Form.Item
+          label="Usuário"
+          name="username"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your Username!',
+            },
+          ]}
+        >
+          <Input prefix={<UserOutlined className="site-form-item-icon" />} />
+        </Form.Item>
+        <Form.Item
+          label="Senha"
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your Password!',
+            },
+          ]}
+        >
+          <Input
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            type="password"
+          />
+        </Form.Item>
+        <Form.Item>
+          <Form.Item name="remember" valuePropName="checked" noStyle>
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Senha</Form.Label>
-            <Form.Control type="password" name="password" onChange={formik.handleChange} value={formik.values.password} />
-            {formik.errors.password &&
-              <Form.Text className="text-danger">
-                {formik.errors.password}
-              </Form.Text>
-            }
-          </Form.Group>
-          <Link className="recover-password-link">Recuperar senha</Link>
-          <div className="dflex justify-content-center submit-container">
-            {!isLoading &&
-              <Button variant="dark" type="submit">
-                Entrar
-              </Button>
-            }
-            {isLoading &&
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Entrando...</span>
-              </Spinner>
-            }
-          </div>
-        </Form>
-        <Link className='register-link'>Gostaria de se cadastrar? Clique aqui</Link>
-      </div>
+          <a className="login-form-forgot" href="">
+            Forgot password
+          </a>
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="login-form-button">
+            Log in
+          </Button>
+          Or <a href="">register now!</a>
+        </Form.Item>
+      </Form>
     </div>
   );
-}
+};

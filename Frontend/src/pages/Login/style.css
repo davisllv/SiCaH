@@ -5,11 +5,12 @@
 
 .form-container {
   border: 2px solid #000;
+  border-radius: 8px;
 }
 
 .login-form {
   padding: 30px 80px 0 80px;
-  width: 400px;
+  width: 500px;
 }
 
 .submit-container>button {

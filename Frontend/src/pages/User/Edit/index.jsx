@@ -1,4 +1,4 @@
-import { Form } from 'react-bootstrap';
+import { Form } from 'antd';
 import './style.css';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
