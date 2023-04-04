@@ -1,5 +1,5 @@
 import './style.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Switch, Upload } from 'antd';
 import { CameraFilled, LeftOutlined, LockFilled, MailFilled, SaveFilled, UserOutlined } from '@ant-design/icons';
@@ -8,8 +8,17 @@ import ImgCrop from 'antd-img-crop';
 export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showImageUploader, setShowImageUploader] = useState(false);
   const [userImage, setUserImage] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const { pathname } = window.location;
+    if (pathname.includes('edit')) {
+      setIsEditing(true);
+    }
+  }, []);
 
   const onFinish = async (values) => {
     setIsSubmitting(true);
@@ -55,6 +64,14 @@ export default function Index() {
     const imgWindow = window.open(src);
     imgWindow?.document.write(image.outerHTML);
   };
+
+  const switchChange = (value) => {
+    if (!value) {
+      setUserImage([]);
+    }
+
+    setShowImageUploader(value);
+  }
 
   return (
     <div className="user-container">
@@ -126,27 +143,29 @@ export default function Index() {
             </Form.Item>
           </div>
           <Form.Item valuePropName="checked">
-            <Switch />
+            <Switch onChange={switchChange} />
             <span style={{ marginLeft: '10px' }}>Capturar imagens</span>
           </Form.Item>
-          <Form.Item>
-            <ImgCrop rotationSlider>
-              <Upload
-                customRequest={dummyRequest}
-                listType="picture"
-                fileList={userImage}
-                onChange={onChange}
-                onPreview={onPreview}
-              >
-                {userImage.length === 0 &&
-                  <Button htmlType="button">
-                    <CameraFilled />
-                    <span>Adicionar foto</span>
-                  </Button>
-                }
-              </Upload>
-            </ImgCrop>
-          </Form.Item>
+          {showImageUploader &&
+            <Form.Item>
+              <ImgCrop rotationSlider>
+                <Upload
+                  customRequest={dummyRequest}
+                  listType="picture"
+                  fileList={userImage}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                >
+                  {userImage.length === 0 &&
+                    <Button htmlType="button">
+                      <CameraFilled />
+                      <span>Adicionar foto</span>
+                    </Button>
+                  }
+                </Upload>
+              </ImgCrop>
+            </Form.Item>
+          }
           <Form.Item>
             <div className="dflex">
               <Button htmlType="button" type="text" onClick={back}>

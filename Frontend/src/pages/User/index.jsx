@@ -1,18 +1,22 @@
 import './style.css'
 import { useState } from 'react';
-import { Table, Button, Space, Tooltip } from 'antd';
+import { Table, Button, message, Tooltip, Popconfirm } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import EmptyResult from '../../assets/empty-result.jpg';
 import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled } from '@ant-design/icons/lib/icons';
 
 export default function User() {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const [users, setUsers] = useState([
     {
       name: 'Vinicius da Cruz Rodrigues Paulo',
       email: 'vinicius@sicah.com',
       captureImage: false,
-      humor: 'smile'
+      humor: 'smile',
+      id: 1
     },
   ]);
 
@@ -23,8 +27,36 @@ export default function User() {
   }
 
   const navigateToCreate = () => {
-    navigation('create');
+    navigate('create');
   }
+
+  const navigateToEdit = (id) => {
+    navigate(`edit/${id}`);
+  }
+
+  const handleDelete = async (id) => {
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+      success('Usuário excluído com sucesso!');
+    }, 2000);
+  }
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const showPopconfirm = () => {
+    setOpen(true);
+  };
+
+  const success = (content) => {
+    messageApi.open({
+      type: 'success',
+      content,
+    });
+  };
 
   const columns = [
     {
@@ -51,23 +83,37 @@ export default function User() {
       title: 'Ações',
       dataIndex: '',
       render: (_, user) => (
-        <Space size="middle">
+        <div style={{ width: '100px' }}>
           <Tooltip title="Detalhes">
-            <EyeFilled style={{ cursor: 'pointer' }} />
+            <Button type="text" icon={<EyeFilled />}></Button>
           </Tooltip>
           <Tooltip title="Editar">
-            <EditFilled style={{ cursor: 'pointer' }} />
+            <Button onClick={() => navigateToEdit(user.id)} type="text" icon={<EditFilled />}></Button>
           </Tooltip>
           <Tooltip title="Excluir">
-            <DeleteFilled style={{ cursor: 'pointer' }} />
+            <Popconfirm
+              title="Atenção"
+              description="Deseja realmente excluir esse usuário?"
+              okText="Sim"
+              cancelText="Não"
+              okButtonProps={{
+                loading: confirmLoading,
+              }}
+              open={open}
+              onConfirm={() => handleDelete(user.id)}
+              onCancel={handleCancel}
+            >
+              <Button type="text" icon={<DeleteFilled />} onClick={showPopconfirm}></Button>
+            </Popconfirm>
           </Tooltip>
-        </Space>
+        </div>
       )
     }
   ]
 
   return (
     <div className="user-container">
+      {contextHolder}
       <div className="dflex justify-content-between">
         <h2>Usuários</h2>
         <Button variant="light" onClick={navigateToCreate}>
@@ -85,7 +131,7 @@ export default function User() {
       }
       {
         users.length > 0 &&
-        <Table columns={columns} dataSource={users} />
+        <Table columns={columns} dataSource={users} rowKey="id" />
       }
     </div>
   )
