@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "devonray.snippet",
+    "dbaeumer.vscode-eslint",
+    "vector-of-bool.gitflow",
+    "eamodio.gitlens",
+    "redhat.vscode-yaml"
+  ]
+}

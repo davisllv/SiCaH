@@ -1,0 +1,41 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  /*
+      For more information:
+
+      https://code.visualstudio.com/docs/nodejs/nodejs-debugging
+      https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_skipping-uninteresting-code-node-chrome
+   */
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iniciar depuração DoctorClin API",
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/src/lib/waterfall.js"
+      ],
+      "program": "${workspaceFolder}/src/app.js",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false, //Colocar true para quando iniciar a depuração, ele já irá parar (mesmo não havendo um breakpoint)
+      "trace": true
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to current process",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      //"program": "${workspaceFolder}/src/app.js",
+      "cwd": "${workspaceFolder}",
+      "port": 3000,
+      "stopOnEntry": false,
+      "trace": true
+    }
+  ]
+}
