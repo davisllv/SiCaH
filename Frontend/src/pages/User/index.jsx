@@ -1,26 +1,24 @@
 import './style.css'
-import { useState } from 'react';
-import { Table, Button, message, Tooltip, Popconfirm } from 'antd';
+import { useState, useEffect } from 'react';
+import { Table, Button, notification, Tooltip, Popconfirm, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import EmptyResult from '../../assets/empty-result.jpg';
-import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled } from '@ant-design/icons/lib/icons';
+import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled, LoadingOutlined } from '@ant-design/icons/lib/icons';
+import userService from '../../services/user-service';
 
 export default function User() {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState({});
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
-  const [users, setUsers] = useState([
-    {
-      name: 'Vinicius da Cruz Rodrigues Paulo',
-      email: 'vinicius@sicah.com',
-      captureImage: false,
-      humor: 'smile',
-      id: 1
-    },
-  ]);
+  const [notificationApi, contextHolder] = notification.useNotification();
+  const [users, setUsers] = useState([]);
+  const [isRequesting, setIsRequesting] = useState(false);
 
   const handleUserHumor = (humor) => {
+    if (!humor) {
+      return 'Não detectado';
+    }
+
     if (humor === 'smile') {
       return <SmileFilled />
     }
@@ -36,32 +34,53 @@ export default function User() {
 
   const handleDelete = async (id) => {
     setConfirmLoading(true);
-    setTimeout(() => {
-      setOpen(false);
+    try {
+      await userService.deleteUser(id);
+      setUsers(users.filter((user) => user.id !== id));
+      success('Sucesso', 'Usuário excluído com sucesso!');
+    } catch (error) {
+      error('Erro', 'Não foi possível excluir o usuário!');
+    } finally {
+      setOpen((prevOpen) => ({
+        ...prevOpen,
+        [id]: false
+      }));
       setConfirmLoading(false);
-      success('Usuário excluído com sucesso!');
-    }, 2000);
+    }
   }
 
-  const handleCancel = () => {
-    setOpen(false);
+  const handleCancel = (id) => {
+    setOpen((prevOpen) => ({
+      ...prevOpen,
+      [id]: false
+    }));
   };
 
-  const showPopconfirm = () => {
-    setOpen(true);
+  const showPopconfirm = (id) => {
+    setOpen((prevOpen) => ({
+      ...prevOpen,
+      [id]: true
+    }));
   };
 
-  const success = (content) => {
-    messageApi.open({
-      type: 'success',
-      content,
+  const success = (title, message) => {
+    notificationApi.success({
+      message: title,
+      description: message,
     });
   };
+
+  const error = (title, message) => {
+    notificationApi.error({
+      message: title,
+      description: message,
+    });
+  }
 
   const columns = [
     {
       title: 'Nome',
-      dataIndex: 'name',
+      dataIndex: 'nome',
       render: (text) => text,
     },
     {
@@ -71,7 +90,7 @@ export default function User() {
     },
     {
       title: 'Permite capturar imagens',
-      dataIndex: 'captureImage',
+      dataIndex: 'permite_foto',
       render: (flag) => flag ? 'Sim' : 'Não',
     },
     {
@@ -99,7 +118,7 @@ export default function User() {
               okButtonProps={{
                 loading: confirmLoading,
               }}
-              open={open}
+              open={open[user.id]}
               onConfirm={() => handleDelete(user.id)}
               onCancel={handleCancel}
             >
@@ -110,6 +129,18 @@ export default function User() {
       )
     }
   ]
+
+  useEffect(() => {
+    setIsRequesting(true);
+    userService.getUsers()
+      .then((response) => {
+        setUsers(response);
+      }).catch((error) => {
+        error('Erro', 'Não foi possível carregar os dados');
+      }).finally(() => {
+        setIsRequesting(false);
+      });
+  }, [])
 
   return (
     <div className="user-container">
@@ -123,14 +154,22 @@ export default function User() {
           </div>
         </Button>
       </div>
-      {users.length === 0 &&
+      {(users.length === 0 && !isRequesting) &&
         <div className="empty-result">
           <img src={EmptyResult} alt="Nenhum resultado foi encontrado" />
           <p>Nenhum usuário encontrado</p>
         </div>
       }
-      {
-        users.length > 0 &&
+      {isRequesting &&
+        <div className="dflex justify-content-center align-items-center" style={{ height: '80%' }}>
+          <Spin
+            indicator={<LoadingOutlined
+              style={{ fontSize: 60 }}
+              spin />}
+          />
+        </div>
+      }
+      {(!isRequesting && users.length > 0) &&
         <Table columns={columns} dataSource={users} rowKey="id" />
       }
     </div>
