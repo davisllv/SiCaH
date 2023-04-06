@@ -14,7 +14,7 @@ const config = {
     }
 }
 
-async function queryDb(tipo, query) {
+async function queryDb (tipo, query) {
     try {
         let connection = await sql.connect(config)
         let resultado = await connection.request().query(query)
@@ -23,34 +23,34 @@ async function queryDb(tipo, query) {
             if (resultado.recordset.length > 0) {
                 return resultado.recordset
             } else {
-                return { mensagem: 'Não existem registros.'}
+                return { mensagem: 'Não existem registros.' }
             }
         } else if (tipo == 'insert') {
             if (resultado.rowsAffected.length > 0) {
-                return { mensagem: 'Registro inserido com sucesso.' }
+                return { mensagem: 'Registro inserido com sucesso.', ...resultado }
             } else {
-                return { mensagem: 'Não foi possível criar o registro.'}
+                return { mensagem: 'Não foi possível criar o registro.' }
             }
         } else if (tipo == 'update') {
             if (resultado.rowsAffected.length > 0) {
                 return { mensagem: 'Registro atualizado com sucesso.' }
             } else {
-                return { mensagem: 'Não foi possível atualizar o registro.'}
+                return { mensagem: 'Não foi possível atualizar o registro.' }
             }
         } else if (tipo == 'delete') {
             if (resultado.rowsAffected.length > 0) {
                 return { mensagem: 'Registro deletado com sucesso.' }
             } else {
-                return { mensagem: 'Não foi possível deletar o registro.'}
+                return { mensagem: 'Não foi possível deletar o registro.' }
             }
         } else {
-            return { mensagem: 'Ocorreu algo inesperado na solicitação'}
+            return { mensagem: 'Ocorreu algo inesperado na solicitação' }
         }
 
 
     } catch (err) {
-        return new Error(err.message)
+        throw err;
     }
 }
 
-module.exports = {queryDb}
+module.exports = { queryDb }
