@@ -1,9 +1,13 @@
 import './style.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Input, Switch, Upload } from 'antd';
-import { CameraFilled, LeftOutlined, LockFilled, MailFilled, SaveFilled, UserOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Switch, Upload, DatePicker, Select, Spin, notification } from 'antd';
+import { CameraFilled, LeftOutlined, LockFilled, MailFilled, SaveFilled, UserOutlined, LoadingOutlined } from '@ant-design/icons';
 import ImgCrop from 'antd-img-crop';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import userService from '../../../services/user-service';
+dayjs.extend(customParseFormat);
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,21 +15,74 @@ export default function Index() {
   const [showImageUploader, setShowImageUploader] = useState(false);
   const [userImage, setUserImage] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
+  const dateFormatList = ['DD/MM/YYYY'];
+  const [notificationApi, contextHolder] = notification.useNotification();
+  const [form] = Form.useForm()
 
   useEffect(() => {
     const { pathname } = window.location;
     if (pathname.includes('edit')) {
       setIsEditing(true);
+      setIsLoading(true);
+      findUser(pathname.split('/').pop());
     }
   }, []);
 
-  const onFinish = async (values) => {
-    setIsSubmitting(true);
+  const success = (title, message) => {
+    notificationApi.success({
+      message: title,
+      description: message,
+    });
+  };
 
-    setTimeout(() => {
+  const error = (title, message) => {
+    notificationApi.error({
+      message: title,
+      description: message,
+    });
+  };
+
+  const findUser = (id) => {
+    userService.findUser(id).then((response) => {
+      setUser(response);
+      form.setFieldsValue({
+        ...response,
+        dataNasc: dayjs(response.dataNasc)
+      })
+      setIsLoading(false);
+    })
+  }
+
+  const onFinish = async (entity) => {
+    try {
+      setIsSubmitting(true);
+      entity = {
+        ...entity,
+        dataNasc: entity.dataNasc?.toDate().toISOString() || '',
+        id_endereco: user.id_endereco || 0,
+        id: user.id || 0
+      }
+
+      if (!isEditing) {
+        await userService.createUser(entity);
+        success('Sucesso', 'Usuário cadastrado com sucesso!');
+      } else {
+        await userService.updateUser(entity.id, entity);
+        success('Sucesso', 'Usuário atualizado com sucesso!');
+      }
+
+      back();
+    } catch (err) {
+      if (!isEditing) {
+        error('Erro', 'Erro ao cadastrar usuário!');
+      } else {
+        error('Erro', 'Erro ao atualizar usuário!');
+      }
+    } finally {
       setIsSubmitting(false);
-    }, 4000);
+    }
   }
 
   const back = () => {
@@ -75,26 +132,30 @@ export default function Index() {
 
   return (
     <div className="user-container">
+      {contextHolder}
       <div className="dflex justify-content-between">
         <h2>Cadastrar usuário</h2>
       </div>
       <div>
         <Form
+          form={form}
           layout="vertical"
           onFinish={onFinish}
           disabled={isLoading}
+          initialValues={user}
           size="large"
           validateMessages={validateMessages}
         >
           <Form.Item
-            name="username"
+            name="nome"
             rules={[
               {
                 required: true,
               },
             ]}
+            label='Nome'
           >
-            <Input prefix={<UserOutlined />} placeholder="Nome" />
+            <Input prefix={<UserOutlined />} />
           </Form.Item>
           <Form.Item
             name="email"
@@ -104,45 +165,186 @@ export default function Index() {
                 type: 'email',
               }
             ]}
+            label='Email'
           >
-            <Input prefix={<MailFilled />} placeholder="Email" />
+            <Input prefix={<MailFilled />} />
           </Form.Item>
+          {!isEditing &&
+            <div className="dflex justify-content-between">
+              <Form.Item
+                className="password-field"
+                name="senha"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                hasFeedback
+                label="Senha"
+              >
+                <Input.Password prefix={<LockFilled />} />
+              </Form.Item>
+              <Form.Item
+                className="password-field"
+                name="confirm"
+                dependencies={['senha']}
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('senha') === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Senhas não são iguais!'));
+                    },
+                  }),
+                ]}
+                label="Confirmar senha"
+              >
+                <Input.Password prefix={<LockFilled />} />
+              </Form.Item>
+            </div>
+          }
           <div className="dflex justify-content-between">
             <Form.Item
-              className="password-field"
-              name="password"
+              style={{ width: '39%' }}
+              name="dataNasc"
               rules={[
                 {
-                  required: true,
-                },
+                  required: false,
+                }
               ]}
-              hasFeedback
+              label="Data de nascimento"
             >
-              <Input.Password prefix={<LockFilled />} placeholder="Senha" />
+              <DatePicker
+                style={{ width: '100%' }} format={dateFormatList} inputReadOnly placeholder='' />
             </Form.Item>
             <Form.Item
-              className="password-field"
-              name="confirm"
-              dependencies={['password']}
-              hasFeedback
+              style={{ width: '29%' }}
+              name="sexo"
               rules={[
                 {
-                  required: true,
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error("As senhas não são iguais"));
-                  },
-                }),
+                  required: false,
+                }
               ]}
+              label="Sexo"
             >
-              <Input.Password prefix={<LockFilled />} placeholder="Confirmar senha" />
+              <Select
+                style={{ width: '100%' }}
+                options={[
+                  { value: 'm', label: 'Masculino' },
+                  { value: 'f', label: 'Feminino' },
+                  { value: 'o', label: 'Outro' },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ width: '29%' }}
+              name="telefone"
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="Telefone"
+            >
+              <Input style={{ width: '100%' }} />
             </Form.Item>
           </div>
-          <Form.Item valuePropName="checked">
+          <div className="dflex justify-space-between">
+            <Form.Item
+              name="cep"
+              style={{ width: '20%' }}
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="CEP"
+            >
+              <Input style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item
+              name="rua"
+              style={{ flex: 1, marginLeft: '10px' }}
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="Rua"
+            >
+              <Input />
+            </Form.Item>
+          </div>
+          <div className="dflex">
+            <Form.Item
+              name="numero"
+              style={{ width: '20%' }}
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="Número"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="complemento"
+              style={{ marginLeft: '10px', flex: 1 }}
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="Complemento"
+            >
+              <Input />
+            </Form.Item>
+          </div>
+          <div className="dflex justify-content-between">
+            <Form.Item
+              name="bairro"
+              style={{ width: '32%' }}
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="Bairro"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="cidade"
+              style={{ width: '32%' }}
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="Cidade"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="estado"
+              style={{ width: '32%' }}
+              rules={[
+                {
+                  required: false,
+                }
+              ]}
+              label="Estado"
+            >
+              <Input />
+            </Form.Item>
+          </div>
+          <Form.Item valuePropName="permite_foto">
             <Switch onChange={switchChange} />
             <span style={{ marginLeft: '10px' }}>Capturar imagens</span>
           </Form.Item>
@@ -172,9 +374,27 @@ export default function Index() {
                 <LeftOutlined />
                 Voltar
               </Button>
-              <Button htmlType="submit" type="primary" style={{ marginLeft: '10px' }}>
-                <SaveFilled />
-                Salvar
+              <Button htmlType="submit" type="primary" style={{ marginLeft: '10px' }} disabled={isSubmitting}>
+                {!isSubmitting &&
+                  <>
+                    <SaveFilled />
+                    <span style={{ marginLeft: '10px' }}>Salvar</span>
+                  </>
+                }
+                {isSubmitting &&
+                  <>
+                    <Spin
+                      indicator={
+                        <LoadingOutlined
+                          style={{ fontSize: 18, color: 'black' }}
+                          spin
+                        />
+                      }
+                    />
+
+                    <span style={{ marginLeft: '10px' }}>Salvando</span>
+                  </>
+                }
               </Button>
             </div>
           </Form.Item>
