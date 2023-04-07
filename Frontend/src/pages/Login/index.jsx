@@ -10,12 +10,14 @@ export default function Login() {
 
   const navigate = useNavigate();
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-    navigate("/home");
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      navigate("/home");
+    }, 3000);
   };
 
   return (
-
     <div className="principal-container">
       <div className="img-container">
         <img src={LoginImage} alt="Qualquer Coisa" />
