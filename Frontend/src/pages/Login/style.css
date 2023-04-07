@@ -1,19 +1,23 @@
+.principal-container {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
 .login-container {
-  width: 100vw;
   height: 100vh;
+  align-items: center;
 }
 
-.form-container {
-  border: 2px solid #000;
-  border-radius: 8px;
+.login-form {
+  width: 60%;
 }
-
+/*
 .login-form {
   padding: 30px 80px 0 80px;
   width: 500px;
 }
 
-.submit-container>button {
+.submit-container > button {
   width: 100%;
 }
 
@@ -27,4 +31,4 @@
 
 .register-link {
   text-align: center;
-}
+} */
