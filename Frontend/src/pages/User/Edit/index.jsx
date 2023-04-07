@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import './style.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +16,7 @@ export default function Index() {
   const [showImageUploader, setShowImageUploader] = useState(false);
   const [userImage, setUserImage] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDetails, setIsDetails] = useState(false);
   const [user, setUser] = useState({});
   const navigate = useNavigate();
   const dateFormatList = ['DD/MM/YYYY'];
@@ -23,8 +25,12 @@ export default function Index() {
 
   useEffect(() => {
     const { pathname } = window.location;
-    if (pathname.includes('edit')) {
-      setIsEditing(true);
+    if (pathname.includes('edit') || pathname.includes('details')) {
+      if (pathname.includes('edit')) {
+        setIsEditing(true);
+      } else {
+        setIsDetails(true);
+      }
       setIsLoading(true);
       findUser(pathname.split('/').pop());
     }
@@ -134,272 +140,300 @@ export default function Index() {
     <div className="user-container">
       {contextHolder}
       <div className="dflex justify-content-between">
-        <h2>Cadastrar usuário</h2>
+        {
+          isEditing &&
+          <h2>Editar usuário</h2>
+        }
+        {
+          isDetails &&
+          <h2>Detalhes do usuário</h2>
+        }
+        {
+          (!isEditing && !isDetails) &&
+          <h2>Cadastrar usuário</h2>
+        }
       </div>
-      <div>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          disabled={isLoading}
-          initialValues={user}
-          size="large"
-          validateMessages={validateMessages}
-        >
-          <Form.Item
-            name="nome"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            label='Nome'
+      {!isLoading &&
+        <div>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            initialValues={user}
+            size="large"
+            validateMessages={validateMessages}
+            disabled={isSubmitting || isDetails}
           >
-            <Input prefix={<UserOutlined />} />
-          </Form.Item>
-          <Form.Item
-            name="email"
-            rules={[
-              {
-                required: true,
-                type: 'email',
-              }
-            ]}
-            label='Email'
-          >
-            <Input prefix={<MailFilled />} />
-          </Form.Item>
-          {!isEditing &&
+            <Form.Item
+              name="nome"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              label='Nome'
+            >
+              <Input prefix={<UserOutlined />} />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  type: 'email',
+                }
+              ]}
+              label='Email'
+            >
+              <Input prefix={<MailFilled />} />
+            </Form.Item>
+            {(!isEditing && !isDetails) &&
+              <div className="dflex justify-content-between">
+                <Form.Item
+                  className="password-field"
+                  name="senha"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                  hasFeedback
+                  label="Senha"
+                >
+                  <Input.Password prefix={<LockFilled />} />
+                </Form.Item>
+                <Form.Item
+                  className="password-field"
+                  name="confirm"
+                  dependencies={['senha']}
+                  hasFeedback
+                  rules={[
+                    {
+                      required: true,
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('senha') === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('Senhas não são iguais!'));
+                      },
+                    }),
+                  ]}
+                  label="Confirmar senha"
+                >
+                  <Input.Password prefix={<LockFilled />} />
+                </Form.Item>
+              </div>
+            }
             <div className="dflex justify-content-between">
               <Form.Item
-                className="password-field"
-                name="senha"
+                style={{ width: '39%' }}
+                name="dataNasc"
                 rules={[
                   {
-                    required: true,
-                  },
+                    required: false,
+                  }
                 ]}
-                hasFeedback
-                label="Senha"
+                label="Data de nascimento"
               >
-                <Input.Password prefix={<LockFilled />} />
+                <DatePicker
+                  style={{ width: '100%' }} format={dateFormatList} inputReadOnly placeholder='' />
               </Form.Item>
               <Form.Item
-                className="password-field"
-                name="confirm"
-                dependencies={['senha']}
-                hasFeedback
+                style={{ width: '29%' }}
+                name="sexo"
                 rules={[
                   {
-                    required: true,
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue('senha') === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('Senhas não são iguais!'));
-                    },
-                  }),
+                    required: false,
+                  }
                 ]}
-                label="Confirmar senha"
+                label="Sexo"
               >
-                <Input.Password prefix={<LockFilled />} />
+                <Select
+                  style={{ width: '100%' }}
+                  options={[
+                    { value: 'm', label: 'Masculino' },
+                    { value: 'f', label: 'Feminino' },
+                    { value: 'o', label: 'Outro' },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item
+                style={{ width: '29%' }}
+                name="telefone"
+                rules={[
+                  {
+                    required: false,
+                  }
+                ]}
+                label="Telefone"
+              >
+                <Input style={{ width: '100%' }} />
               </Form.Item>
             </div>
-          }
-          <div className="dflex justify-content-between">
-            <Form.Item
-              style={{ width: '39%' }}
-              name="dataNasc"
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Data de nascimento"
-            >
-              <DatePicker
-                style={{ width: '100%' }} format={dateFormatList} inputReadOnly placeholder='' />
-            </Form.Item>
-            <Form.Item
-              style={{ width: '29%' }}
-              name="sexo"
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Sexo"
-            >
-              <Select
-                style={{ width: '100%' }}
-                options={[
-                  { value: 'm', label: 'Masculino' },
-                  { value: 'f', label: 'Feminino' },
-                  { value: 'o', label: 'Outro' },
-                ]}
-              />
-            </Form.Item>
-            <Form.Item
-              style={{ width: '29%' }}
-              name="telefone"
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Telefone"
-            >
-              <Input style={{ width: '100%' }} />
-            </Form.Item>
-          </div>
-          <div className="dflex justify-space-between">
-            <Form.Item
-              name="cep"
-              style={{ width: '20%' }}
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="CEP"
-            >
-              <Input style={{ width: '100%' }} />
-            </Form.Item>
-            <Form.Item
-              name="rua"
-              style={{ flex: 1, marginLeft: '10px' }}
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Rua"
-            >
-              <Input />
-            </Form.Item>
-          </div>
-          <div className="dflex">
-            <Form.Item
-              name="numero"
-              style={{ width: '20%' }}
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Número"
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="complemento"
-              style={{ marginLeft: '10px', flex: 1 }}
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Complemento"
-            >
-              <Input />
-            </Form.Item>
-          </div>
-          <div className="dflex justify-content-between">
-            <Form.Item
-              name="bairro"
-              style={{ width: '32%' }}
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Bairro"
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="cidade"
-              style={{ width: '32%' }}
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Cidade"
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="estado"
-              style={{ width: '32%' }}
-              rules={[
-                {
-                  required: false,
-                }
-              ]}
-              label="Estado"
-            >
-              <Input />
-            </Form.Item>
-          </div>
-          <Form.Item valuePropName="permite_foto">
-            <Switch onChange={switchChange} />
-            <span style={{ marginLeft: '10px' }}>Capturar imagens</span>
-          </Form.Item>
-          {showImageUploader &&
-            <Form.Item>
-              <ImgCrop rotationSlider>
-                <Upload
-                  customRequest={dummyRequest}
-                  listType="picture"
-                  fileList={userImage}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                >
-                  {userImage.length === 0 &&
-                    <Button htmlType="button">
-                      <CameraFilled />
-                      <span>Adicionar foto</span>
-                    </Button>
+            <div className="dflex justify-space-between">
+              <Form.Item
+                name="cep"
+                style={{ width: '20%' }}
+                rules={[
+                  {
+                    required: false,
                   }
-                </Upload>
-              </ImgCrop>
-            </Form.Item>
-          }
-          <Form.Item>
-            <div className="dflex">
-              <Button htmlType="button" type="text" onClick={back}>
-                <LeftOutlined />
-                Voltar
-              </Button>
-              <Button htmlType="submit" type="primary" style={{ marginLeft: '10px' }} disabled={isSubmitting}>
-                {!isSubmitting &&
-                  <>
-                    <SaveFilled />
-                    <span style={{ marginLeft: '10px' }}>Salvar</span>
-                  </>
-                }
-                {isSubmitting &&
-                  <>
-                    <Spin
-                      indicator={
-                        <LoadingOutlined
-                          style={{ fontSize: 18, color: 'black' }}
-                          spin
-                        />
-                      }
-                    />
-
-                    <span style={{ marginLeft: '10px' }}>Salvando</span>
-                  </>
-                }
-              </Button>
+                ]}
+                label="CEP"
+              >
+                <Input style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item
+                name="rua"
+                style={{ flex: 1, marginLeft: '10px' }}
+                rules={[
+                  {
+                    required: false,
+                  }
+                ]}
+                label="Rua"
+              >
+                <Input />
+              </Form.Item>
             </div>
-          </Form.Item>
-        </Form>
-      </div>
+            <div className="dflex">
+              <Form.Item
+                name="numero"
+                style={{ width: '20%' }}
+                rules={[
+                  {
+                    required: false,
+                  }
+                ]}
+                label="Número"
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="complemento"
+                style={{ marginLeft: '10px', flex: 1 }}
+                rules={[
+                  {
+                    required: false,
+                  }
+                ]}
+                label="Complemento"
+              >
+                <Input />
+              </Form.Item>
+            </div>
+            <div className="dflex justify-content-between">
+              <Form.Item
+                name="bairro"
+                style={{ width: '32%' }}
+                rules={[
+                  {
+                    required: false,
+                  }
+                ]}
+                label="Bairro"
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="cidade"
+                style={{ width: '32%' }}
+                rules={[
+                  {
+                    required: false,
+                  }
+                ]}
+                label="Cidade"
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="estado"
+                style={{ width: '32%' }}
+                rules={[
+                  {
+                    required: false,
+                  }
+                ]}
+                label="Estado"
+              >
+                <Input />
+              </Form.Item>
+            </div>
+            {!isDetails &&
+              <Form.Item valuePropName="permite_foto">
+                <Switch onChange={switchChange} />
+                <span style={{ marginLeft: '10px' }}>Capturar imagens</span>
+              </Form.Item>
+            }
+            {showImageUploader &&
+              <Form.Item>
+                <ImgCrop rotationSlider>
+                  <Upload
+                    customRequest={dummyRequest}
+                    listType="picture"
+                    fileList={userImage}
+                    onChange={onChange}
+                    onPreview={onPreview}
+                  >
+                    {userImage.length === 0 &&
+                      <Button htmlType="button">
+                        <CameraFilled />
+                        <span>Adicionar foto</span>
+                      </Button>
+                    }
+                  </Upload>
+                </ImgCrop>
+              </Form.Item>
+            }
+            <Form.Item>
+              <div className="dflex">
+                <Button htmlType="button" type="text" onClick={back} disabled={isSubmitting}>
+                  <LeftOutlined />
+                  Voltar
+                </Button>
+                {!isDetails &&
+                  <Button htmlType="submit" type="primary" style={{ marginLeft: '10px' }} disabled={isSubmitting}>
+                    {!isSubmitting &&
+                      <>
+                        <SaveFilled />
+                        <span style={{ marginLeft: '10px' }}>Salvar</span>
+                      </>
+                    }
+                    {isSubmitting &&
+                      <>
+                        <Spin
+                          indicator={
+                            <LoadingOutlined
+                              style={{ fontSize: 18, color: 'black' }}
+                              spin
+                            />
+                          }
+                        />
+
+                        <span style={{ marginLeft: '10px' }}>Salvando</span>
+                      </>
+                    }
+                  </Button>
+                }
+              </div>
+            </Form.Item>
+          </Form>
+        </div>
+      }
+      {isLoading &&
+        <div style={{ height: '80%' }}>
+          <div className="dflex justify-content-center align-items-center" style={{ height: '90%' }}>
+            <Spin
+              indicator={<LoadingOutlined
+                style={{ fontSize: 60 }}
+                spin />}
+            />
+          </div>
+        </div>
+      }
     </div >
   )
 }
