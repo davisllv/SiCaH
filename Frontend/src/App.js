@@ -8,7 +8,7 @@ import User from "./pages/User";
 import EditUser from "./pages/User/Edit";
 import Integracao from "./pages/Integracao";
 
-function App() {
+function App () {
   const location = useLocation();
   let app;
   if (location.pathname === "/") {
@@ -16,25 +16,22 @@ function App() {
       <>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="integration" element={<Integracao />} />
-          <Route path="home" element={<Home />} />
-          <Route path="user" element={<User />}></Route>
-          <Route path="user/create" element={<EditUser />}></Route>
         </Routes>
       </>
     );
   } else {
     app = (
-      <>
+      <div className="dflex">
         <Menu />
         <Routes>
-          <Route path="/" element={<Login />} />
           <Route path="integration" element={<Integracao />} />
           <Route path="home" element={<Home />} />
           <Route path="user" element={<User />}></Route>
           <Route path="user/create" element={<EditUser />}></Route>
+          <Route path="user/edit/:id" element={<EditUser />}></Route>
+          <Route path="user/details/:id" element={<EditUser />}></Route>
         </Routes>
-      </>
+      </div>
     );
   }
 

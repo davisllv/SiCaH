@@ -1,3 +1,9 @@
+.user-container {
+  padding: var(--container-padding);
+  margin: 0;
+  width: 100%;
+}
+
 .edit-form-container {
   width: 50%;
 }
@@ -6,6 +12,6 @@
   width: 40%;
 }
 
-.user-container>div>form>.password-field {
+.password-field {
   width: 49%;
 }

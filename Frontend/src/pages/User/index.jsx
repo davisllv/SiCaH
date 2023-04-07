@@ -1,35 +1,95 @@
 import './style.css'
-import { useState } from 'react';
-import { Table, Button, Space, Tooltip } from 'antd';
+import { useState, useEffect } from 'react';
+import { Table, Button, notification, Tooltip, Popconfirm, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import EmptyResult from '../../assets/empty-result.jpg';
-import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled } from '@ant-design/icons/lib/icons';
+import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled, LoadingOutlined } from '@ant-design/icons/lib/icons';
+import userService from '../../services/user-service';
 
 export default function User() {
-  const navigation = useNavigate();
-  const [users, setUsers] = useState([
-    {
-      name: 'Vinicius da Cruz Rodrigues Paulo',
-      email: 'vinicius@sicah.com',
-      captureImage: false,
-      humor: 'smile'
-    },
-  ]);
+  const navigate = useNavigate();
+  const defaultPageSize = 10;
+  const [open, setOpen] = useState({});
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [notificationApi, contextHolder] = notification.useNotification();
+  const [users, setUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [changingPage, setChangingPage] = useState(false);
 
   const handleUserHumor = (humor) => {
+    if (!humor) {
+      return 'Não detectado';
+    }
+
     if (humor === 'smile') {
       return <SmileFilled />
     }
   }
 
   const navigateToCreate = () => {
-    navigation('/create');
+    navigate('create');
+  }
+
+  const navigateToEdit = (id) => {
+    navigate(`edit/${id}`);
+  }
+
+  const navigateToDetails = (id) => {
+    navigate(`details/${id}`);
+  }
+
+  const handleDelete = async (id) => {
+    setConfirmLoading(true);
+    try {
+      await userService.deleteUser(id);
+      setUsers(users.filter((user) => user.id !== id));
+      success('Sucesso', 'Usuário excluído com sucesso!');
+    } catch (error) {
+      error('Erro', 'Não foi possível excluir o usuário!');
+    } finally {
+      setOpen((prevOpen) => ({
+        ...prevOpen,
+        [id]: false
+      }));
+      setConfirmLoading(false);
+    }
+  }
+
+  const handleCancel = (id) => {
+    setOpen((prevOpen) => ({
+      ...prevOpen,
+      [id]: false
+    }));
+  };
+
+  const showPopconfirm = (id) => {
+    setOpen((prevOpen) => ({
+      ...prevOpen,
+      [id]: true
+    }));
+  };
+
+  const success = (title, message) => {
+    notificationApi.success({
+      message: title,
+      description: message,
+    });
+  };
+
+  const error = (title, message) => {
+    notificationApi.error({
+      message: title,
+      description: message,
+    });
   }
 
   const columns = [
     {
       title: 'Nome',
-      dataIndex: 'name',
+      dataIndex: 'nome',
       render: (text) => text,
     },
     {
@@ -39,7 +99,7 @@ export default function User() {
     },
     {
       title: 'Permite capturar imagens',
-      dataIndex: 'captureImage',
+      dataIndex: 'permite_foto',
       render: (flag) => flag ? 'Sim' : 'Não',
     },
     {
@@ -51,23 +111,68 @@ export default function User() {
       title: 'Ações',
       dataIndex: '',
       render: (_, user) => (
-        <Space size="middle">
+        <div style={{ width: '100px' }}>
           <Tooltip title="Detalhes">
-            <EyeFilled style={{ cursor: 'pointer' }} />
+            <Button disabled={changingPage} onClick={() => navigateToDetails(user.id)} type="text" icon={<EyeFilled />}></Button>
           </Tooltip>
           <Tooltip title="Editar">
-            <EditFilled style={{ cursor: 'pointer' }} />
+            <Button disabled={changingPage} onClick={() => navigateToEdit(user.id)} type="text" icon={<EditFilled />}></Button>
           </Tooltip>
           <Tooltip title="Excluir">
-            <DeleteFilled style={{ cursor: 'pointer' }} />
+            <Popconfirm
+              title="Atenção"
+              description="Deseja realmente excluir esse usuário?"
+              okText="Sim"
+              cancelText="Não"
+              okButtonProps={{
+                loading: confirmLoading,
+              }}
+              open={open[user.id]}
+              onConfirm={() => handleDelete(user.id)}
+              onCancel={handleCancel}
+            >
+              <Button disabled={changingPage} type="text" icon={<DeleteFilled />} onClick={showPopconfirm}></Button>
+            </Popconfirm>
           </Tooltip>
-        </Space>
+        </div>
       )
     }
   ]
 
+  const onShowSizeChange = (current, pageSize) => {
+    setPageSize(pageSize);
+    fetchData(pageSize, 0);
+    setCurrentPage(1);
+  };
+
+  const onPageChange = (current, pageSize) => {
+    const skip = (current - 1) * pageSize;
+    setCurrentPage(current);
+    fetchData(pageSize, skip);
+  }
+
+  const fetchData = (take, skip) => {
+    setChangingPage(true);
+    userService.getUsers(take, skip)
+      .then((response) => {
+        setUsers(response.users);
+        setTotalUsers(response.total);
+      }).catch((error) => {
+        error('Erro', 'Não foi possível carregar os dados');
+      }).finally(() => {
+        setIsRequesting(false);
+        setChangingPage(false);
+      });
+  }
+
+  useEffect(() => {
+    setIsRequesting(true);
+    fetchData(defaultPageSize, 0);
+  }, [])
+
   return (
     <div className="user-container">
+      {contextHolder}
       <div className="dflex justify-content-between">
         <h2>Usuários</h2>
         <Button variant="light" onClick={navigateToCreate}>
@@ -77,15 +182,55 @@ export default function User() {
           </div>
         </Button>
       </div>
-      {users.length === 0 &&
+      {(users.length === 0 && !isRequesting) &&
         <div className="empty-result">
           <img src={EmptyResult} alt="Nenhum resultado foi encontrado" />
           <p>Nenhum usuário encontrado</p>
         </div>
       }
-      {
-        users.length > 0 &&
-        <Table columns={columns} dataSource={users} />
+      {isRequesting &&
+        <div className="dflex justify-content-center align-items-center" style={{ height: '80%' }}>
+          <Spin
+            indicator={<LoadingOutlined
+              style={{ fontSize: 60 }}
+              spin />}
+          />
+        </div>
+      }
+      {(!isRequesting && users.length > 0) &&
+        <>
+          {changingPage &&
+            <Spin style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', zIndex: 2, top: '25%' }}
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    fontSize: 24,
+                  }}
+                  spin
+                />
+              }
+            />
+          }
+          <Table
+            columns={columns}
+            dataSource={users}
+            rowKey="id"
+            pagination={{
+              total: totalUsers,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '20', '50', '100'],
+              defaultPageSize: defaultPageSize,
+              pageSize: pageSize,
+              onShowSizeChange: onShowSizeChange,
+              current: currentPage,
+              locale: {
+                page: 'Página',
+                items_per_page: ' / Página'
+              },
+              onChange: onPageChange,
+              showTotal: (total, range) => `${range[0]}-${range[1]} de ${total}`
+            }} />
+        </>
       }
     </div>
   )
