@@ -1,7 +1,5 @@
-import './style.css';
+import "./style.css";
 
 export default function Home() {
-  return (
-    <span>Home</span>
-  );
+  return <div style={{ width: "100%" }}></div>;
 }

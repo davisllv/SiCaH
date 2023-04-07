@@ -1,30 +1,23 @@
-.login-container {
-  width: 100vw;
-  height: 100vh;
+.principal-container {
+  display: grid;
+  grid-template-columns: 50% 50%;
 }
 
-.form-container {
-  border: 2px solid #000;
-  border-radius: 8px;
+.login-container {
+  height: 100vh;
+  align-items: center;
 }
 
 .login-form {
-  padding: 30px 80px 0 80px;
-  width: 500px;
+  width: 300px;
 }
 
-.submit-container>button {
+.img-container {
+  width: 40%;
+  height: min-content;
+  margin: auto 0 auto auto;
+}
+
+.img-container>img {
   width: 100%;
-}
-
-.recover-password-link,
-.register-link {
-  margin: 1em 0;
-  color: #000;
-  display: block;
-  text-decoration: none;
-}
-
-.register-link {
-  text-align: center;
 }
