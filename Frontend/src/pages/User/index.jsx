@@ -8,11 +8,16 @@ import userService from '../../services/user-service';
 
 export default function User() {
   const navigate = useNavigate();
+  const defaultPageSize = 10;
   const [open, setOpen] = useState({});
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [notificationApi, contextHolder] = notification.useNotification();
   const [users, setUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isRequesting, setIsRequesting] = useState(false);
+  const [changingPage, setChangingPage] = useState(false);
 
   const handleUserHumor = (humor) => {
     if (!humor) {
@@ -30,6 +35,10 @@ export default function User() {
 
   const navigateToEdit = (id) => {
     navigate(`edit/${id}`);
+  }
+
+  const navigateToDetails = (id) => {
+    navigate(`details/${id}`);
   }
 
   const handleDelete = async (id) => {
@@ -104,10 +113,10 @@ export default function User() {
       render: (_, user) => (
         <div style={{ width: '100px' }}>
           <Tooltip title="Detalhes">
-            <Button type="text" icon={<EyeFilled />}></Button>
+            <Button disabled={changingPage} onClick={() => navigateToDetails(user.id)} type="text" icon={<EyeFilled />}></Button>
           </Tooltip>
           <Tooltip title="Editar">
-            <Button onClick={() => navigateToEdit(user.id)} type="text" icon={<EditFilled />}></Button>
+            <Button disabled={changingPage} onClick={() => navigateToEdit(user.id)} type="text" icon={<EditFilled />}></Button>
           </Tooltip>
           <Tooltip title="Excluir">
             <Popconfirm
@@ -122,7 +131,7 @@ export default function User() {
               onConfirm={() => handleDelete(user.id)}
               onCancel={handleCancel}
             >
-              <Button type="text" icon={<DeleteFilled />} onClick={showPopconfirm}></Button>
+              <Button disabled={changingPage} type="text" icon={<DeleteFilled />} onClick={showPopconfirm}></Button>
             </Popconfirm>
           </Tooltip>
         </div>
@@ -130,16 +139,35 @@ export default function User() {
     }
   ]
 
-  useEffect(() => {
-    setIsRequesting(true);
-    userService.getUsers()
+  const onShowSizeChange = (current, pageSize) => {
+    setPageSize(pageSize);
+    fetchData(pageSize, 0);
+    setCurrentPage(1);
+  };
+
+  const onPageChange = (current, pageSize) => {
+    const skip = (current - 1) * pageSize;
+    setCurrentPage(current);
+    fetchData(pageSize, skip);
+  }
+
+  const fetchData = (take, skip) => {
+    setChangingPage(true);
+    userService.getUsers(take, skip)
       .then((response) => {
-        setUsers(response);
+        setUsers(response.users);
+        setTotalUsers(response.total);
       }).catch((error) => {
         error('Erro', 'Não foi possível carregar os dados');
       }).finally(() => {
         setIsRequesting(false);
+        setChangingPage(false);
       });
+  }
+
+  useEffect(() => {
+    setIsRequesting(true);
+    fetchData(defaultPageSize, 0);
   }, [])
 
   return (
@@ -170,7 +198,39 @@ export default function User() {
         </div>
       }
       {(!isRequesting && users.length > 0) &&
-        <Table columns={columns} dataSource={users} rowKey="id" />
+        <>
+          {changingPage &&
+            <Spin style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', zIndex: 2, top: '25%' }}
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    fontSize: 24,
+                  }}
+                  spin
+                />
+              }
+            />
+          }
+          <Table
+            columns={columns}
+            dataSource={users}
+            rowKey="id"
+            pagination={{
+              total: totalUsers,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '20', '50', '100'],
+              defaultPageSize: defaultPageSize,
+              pageSize: pageSize,
+              onShowSizeChange: onShowSizeChange,
+              current: currentPage,
+              locale: {
+                page: 'Página',
+                items_per_page: ' / Página'
+              },
+              onChange: onPageChange,
+              showTotal: (total, range) => `${range[0]}-${range[1]} de ${total}`
+            }} />
+        </>
       }
     </div>
   )
