@@ -17,6 +17,7 @@ const { Sider } = Layout;
 
 export default function MenuComponent() {
   const navigate = useNavigate();
+
   function getItem(label, key, icon, children) {
     return {
       key,
@@ -53,7 +54,7 @@ export default function MenuComponent() {
       >
         <Menu
           theme="dark"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={["/home"]}
           mode="inline"
           items={items}
           onClick={(ev) => handleNavigation(ev.key)}

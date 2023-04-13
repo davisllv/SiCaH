@@ -1,6 +1,6 @@
 import "antd/dist/reset.css";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { App } from 'antd';
+import { App } from "antd";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import React from "react";
@@ -11,9 +11,11 @@ import Integracao from "./pages/Integracao";
 
 function EntryComponent() {
   const location = useLocation();
-  const user = localStorage.getItem('user') ?
-    JSON.parse(localStorage.getItem('user')) : null;
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
   let app;
+
   if (location.pathname === "/") {
     app = (
       <>
@@ -38,7 +40,7 @@ function EntryComponent() {
     );
   }
 
-  return <App style={{ height: '100%' }}>{app}</App>
+  return <App style={{ height: "100%" }}>{app}</App>;
 }
 
 export default EntryComponent;
