@@ -6,6 +6,7 @@ import {
   ToolFilled,
   UserOutlined,
   ApiFilled,
+  BankOutlined,
 } from "@ant-design/icons";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
@@ -32,11 +33,12 @@ export default function MenuComponent() {
     getItem("Usuários", "/user", <UserOutlined />),
     getItem("Interações", "/integration", <ApiFilled />),
     getItem("Imagens", "/images", <CameraFilled />),
+    getItem("Empresas", "/company", <BankOutlined />),
   ];
 
-  const [menuFechado, setMenuFechado] = useState(false);
+  const [closedMenu, setClosedMenu] = useState(false);
 
-  const handleNavegarMenu = useCallback(
+  const handleNavigation = useCallback(
     (key) => {
       navigate(key);
     },
@@ -46,15 +48,15 @@ export default function MenuComponent() {
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
-        collapsed={menuFechado}
-        onCollapse={(value) => setMenuFechado(value)}
+        collapsed={closedMenu}
+        onCollapse={(value) => setClosedMenu(value)}
       >
         <Menu
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
           items={items}
-          onClick={(ev) => handleNavegarMenu(ev.key)}
+          onClick={(ev) => handleNavigation(ev.key)}
         />
       </Sider>
     </Layout>
