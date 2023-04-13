@@ -2,7 +2,7 @@
 import './style.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Input, Switch, Upload, DatePicker, Select, Spin, notification } from 'antd';
+import { Button, Form, Input, Switch, Upload, DatePicker, Select, Spin, App } from 'antd';
 import { CameraFilled, LeftOutlined, LockFilled, MailFilled, SaveFilled, UserOutlined, LoadingOutlined } from '@ant-design/icons';
 import ImgCrop from 'antd-img-crop';
 import dayjs from 'dayjs';
@@ -20,8 +20,8 @@ export default function Index() {
   const [user, setUser] = useState({});
   const navigate = useNavigate();
   const dateFormatList = ['DD/MM/YYYY'];
-  const [notificationApi, contextHolder] = notification.useNotification();
-  const [form] = Form.useForm()
+  const [form] = Form.useForm();
+  const { notification } = App.useApp();
 
   useEffect(() => {
     const { pathname } = window.location;
@@ -37,14 +37,14 @@ export default function Index() {
   }, []);
 
   const success = (title, message) => {
-    notificationApi.success({
+    notification.success({
       message: title,
       description: message,
     });
   };
 
   const error = (title, message) => {
-    notificationApi.error({
+    notification.error({
       message: title,
       description: message,
     });
@@ -138,7 +138,6 @@ export default function Index() {
 
   return (
     <div className="user-container">
-      {contextHolder}
       <div className="dflex justify-content-between">
         {
           isEditing &&

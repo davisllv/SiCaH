@@ -1,11 +1,11 @@
 import "./style.css";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Spin } from "antd";
+import { Button, Form, Input, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import LoginImage from '../../assets/login.png';
 import { useState } from "react";
 
-export default function Login () {
+export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -72,10 +72,6 @@ export default function Login () {
             {isLoading &&
               <Spin />
             }
-          </Form.Item>
-          <Form.Item className="dflex justify-content-center">
-            Gostaria de se cadastrar?
-            <Button type="link" style={{ paddingLeft: '2px' }}>Clique aqui</Button>
           </Form.Item>
         </Form>
       </div>

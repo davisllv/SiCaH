@@ -1,6 +1,6 @@
 import "./style.css";
 import { useCallback, useState } from "react";
-import { Form, Button, Spin, Radio, Input } from "antd";
+import { Form, Button, Spin, Input } from "antd";
 
 export default function Integracao() {
   const [isLoading, setIsLoading] = useState(false);

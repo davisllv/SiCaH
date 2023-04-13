@@ -1,6 +1,6 @@
 import './style.css'
 import { useState, useEffect } from 'react';
-import { Table, Button, notification, Tooltip, Popconfirm, Spin } from 'antd';
+import { Table, Button, App, Tooltip, Popconfirm, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import EmptyResult from '../../assets/empty-result.jpg';
 import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled, LoadingOutlined } from '@ant-design/icons/lib/icons';
@@ -11,13 +11,13 @@ export default function User() {
   const defaultPageSize = 10;
   const [open, setOpen] = useState({});
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [notificationApi, contextHolder] = notification.useNotification();
   const [users, setUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [pageSize, setPageSize] = useState(defaultPageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [isRequesting, setIsRequesting] = useState(false);
   const [changingPage, setChangingPage] = useState(false);
+  const { notification } = App.useApp();
 
   const handleUserHumor = (humor) => {
     if (!humor) {
@@ -47,7 +47,7 @@ export default function User() {
       await userService.deleteUser(id);
       setUsers(users.filter((user) => user.id !== id));
       success('Sucesso', 'Usuário excluído com sucesso!');
-    } catch (error) {
+    } catch {
       error('Erro', 'Não foi possível excluir o usuário!');
     } finally {
       setOpen((prevOpen) => ({
@@ -73,14 +73,14 @@ export default function User() {
   };
 
   const success = (title, message) => {
-    notificationApi.success({
+    notification.success({
       message: title,
       description: message,
     });
   };
 
   const error = (title, message) => {
-    notificationApi.error({
+    notification.error({
       message: title,
       description: message,
     });
