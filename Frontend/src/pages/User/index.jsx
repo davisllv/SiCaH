@@ -172,7 +172,6 @@ export default function User() {
 
   return (
     <div className="user-container">
-      {contextHolder}
       <div className="dflex justify-content-between">
         <h2>Usuários</h2>
         <Button variant="light" onClick={navigateToCreate}>
