@@ -9,6 +9,9 @@ module.exports = async (req, res, next) => {
       'ORDER BY nome ' +
       `OFFSET ${skip} ROWS FETCH NEXT ${take} ROWS ONLY`;
     let usuarios = await queryDb('select', query);
+    if (usuarios.mensagem) {
+      return res.status(200).json({ users: [], total: 0 })
+    }
     const total = usuarios[0].Total;
     return res.status(200).json({ users: usuarios, total })
   } catch (err) {
