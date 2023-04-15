@@ -7,6 +7,8 @@ import React from "react";
 import Menu from "./components/Menu";
 import User from "./pages/User";
 import EditUser from "./pages/User/Edit";
+import Company from "./pages/Company";
+import EditCompany from "./pages/Company/Edit";
 import Integracao from "./pages/Integracao";
 
 function EntryComponent() {
@@ -34,6 +36,10 @@ function EntryComponent() {
           <Route path="user/create" element={<EditUser />}></Route>
           <Route path="user/edit/:id" element={<EditUser />}></Route>
           <Route path="user/details/:id" element={<EditUser />}></Route>
+          <Route path="company" element={<Company />}></Route>
+          <Route path="company/create" element={<EditCompany />}></Route>
+          <Route path="company/edit/:id" element={<EditCompany />}></Route>
+          <Route path="company/details/:id" element={<EditCompany />}></Route>
         </Routes>
       </div>
     );

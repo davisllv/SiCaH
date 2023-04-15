@@ -1,10 +1,8 @@
-import './style.css'
 import { useState, useEffect } from 'react';
 import { Table, Button, App, Tooltip, Popconfirm, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import EmptyResult from '../../assets/empty-result.jpg';
-import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled, LoadingOutlined } from '@ant-design/icons/lib/icons';
-import userService from '../../services/user-service';
+import { EyeFilled, PlusCircleFilled, EditFilled, DeleteFilled, LoadingOutlined } from '@ant-design/icons/lib/icons';
 import companyService from '../../services/company-service';
 
 export default function User() {
@@ -12,23 +10,13 @@ export default function User() {
   const defaultPageSize = 10;
   const [open, setOpen] = useState({});
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [companies, setCompanies] = useState([]);
+  const [totalCompanies, setTotalCompanies] = useState(0);
   const [pageSize, setPageSize] = useState(defaultPageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [isRequesting, setIsRequesting] = useState(false);
   const [changingPage, setChangingPage] = useState(false);
   const { notification } = App.useApp();
-
-  const handleUserHumor = (humor) => {
-    if (!humor) {
-      return 'Não detectado';
-    }
-
-    if (humor === 'smile') {
-      return <SmileFilled />
-    }
-  }
 
   const navigateToCreate = () => {
     navigate('create');
@@ -45,11 +33,11 @@ export default function User() {
   const handleDelete = async (id) => {
     setConfirmLoading(true);
     try {
-      await userService.deleteUser(id);
-      setUsers(users.filter((user) => user.id !== id));
-      success('Sucesso', 'Usuário excluído com sucesso!');
+      await companyService.deleteCompany(id);
+      setCompanies(companies.filter((company) => company.id !== id));
+      success('Sucesso', 'Empresa excluída com sucesso!');
     } catch {
-      error('Erro', 'Não foi possível excluir o usuário!');
+      error('Erro', 'Não foi possível excluir a empresa!');
     } finally {
       setOpen((prevOpen) => ({
         ...prevOpen,
@@ -94,42 +82,32 @@ export default function User() {
       render: (text) => text,
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
+      title: 'CNPJ',
+      dataIndex: 'cnpj',
       render: (text) => text,
-    },
-    {
-      title: 'Permite capturar imagens',
-      dataIndex: 'permite_foto',
-      render: (flag) => flag ? 'Sim' : 'Não',
-    },
-    {
-      title: 'Humor',
-      dataIndex: 'humor',
-      render: (humor) => handleUserHumor(humor),
     },
     {
       title: 'Ações',
       dataIndex: '',
-      render: (_, user) => (
+      render: (_, company) => (
         <div style={{ width: '100px' }}>
           <Tooltip title="Detalhes">
-            <Button disabled={changingPage} onClick={() => navigateToDetails(user.id)} type="text" icon={<EyeFilled />}></Button>
+            <Button disabled={changingPage} onClick={() => navigateToDetails(company.id)} type="text" icon={<EyeFilled />}></Button>
           </Tooltip>
           <Tooltip title="Editar">
-            <Button disabled={changingPage} onClick={() => navigateToEdit(user.id)} type="text" icon={<EditFilled />}></Button>
+            <Button disabled={changingPage} onClick={() => navigateToEdit(company.id)} type="text" icon={<EditFilled />}></Button>
           </Tooltip>
           <Tooltip title="Excluir">
             <Popconfirm
               title="Atenção"
-              description="Deseja realmente excluir esse usuário?"
+              description="Deseja realmente excluir essa empresa?"
               okText="Sim"
               cancelText="Não"
               okButtonProps={{
                 loading: confirmLoading,
               }}
-              open={open[user.id]}
-              onConfirm={() => handleDelete(user.id)}
+              open={open[company.id]}
+              onConfirm={() => handleDelete(company.id)}
               onCancel={handleCancel}
             >
               <Button disabled={changingPage} type="text" icon={<DeleteFilled />} onClick={showPopconfirm}></Button>
@@ -154,10 +132,10 @@ export default function User() {
 
   const fetchData = (take, skip) => {
     setChangingPage(true);
-    userService.getUsers(take, skip)
+    companyService.getCompanies(take, skip)
       .then((response) => {
-        setUsers(response.users);
-        setTotalUsers(response.total);
+        setCompanies(response.companies);
+        setTotalCompanies(response.total);
       }).catch((error) => {
         error('Erro', 'Não foi possível carregar os dados');
       }).finally(() => {
@@ -174,18 +152,18 @@ export default function User() {
   return (
     <div className="user-container">
       <div className="dflex justify-content-between">
-        <h2>Usuários</h2>
+        <h2>Empresas</h2>
         <Button variant="light" onClick={navigateToCreate}>
           <div className="dflex align-items-center">
             <PlusCircleFilled style={{ marginRight: '10px' }} />
-            <span style={{ fontWeight: '600' }}>Adicionar usuário</span>
+            <span style={{ fontWeight: '600' }}>Adicionar empresa</span>
           </div>
         </Button>
       </div>
-      {(users.length === 0 && !isRequesting) &&
+      {(companies.length === 0 && !isRequesting) &&
         <div className="empty-result">
           <img src={EmptyResult} alt="Nenhum resultado foi encontrado" />
-          <p>Nenhum usuário encontrado</p>
+          <p>Nenhuma empresa encontrada</p>
         </div>
       }
       {isRequesting &&
@@ -197,7 +175,7 @@ export default function User() {
           />
         </div>
       }
-      {(!isRequesting && users.length > 0) &&
+      {(!isRequesting && companies.length > 0) &&
         <>
           {changingPage &&
             <Spin style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', zIndex: 2, top: '25%' }}
@@ -213,10 +191,10 @@ export default function User() {
           }
           <Table
             columns={columns}
-            dataSource={users}
+            dataSource={companies}
             rowKey="id"
             pagination={{
-              total: totalUsers,
+              total: totalCompanies,
               showSizeChanger: true,
               pageSizeOptions: ['5', '10', '20', '50', '100'],
               defaultPageSize: defaultPageSize,

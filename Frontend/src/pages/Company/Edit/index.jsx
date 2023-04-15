@@ -1,54 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import './style.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Input, Switch, Upload, DatePicker, Select, Spin, App } from 'antd';
-import { CameraFilled, LeftOutlined, LockFilled, MailFilled, SaveFilled, UserOutlined, LoadingOutlined } from '@ant-design/icons';
-import ImgCrop from 'antd-img-crop';
+import { Button, Form, Input, Spin, App, AutoComplete } from 'antd';
+import { LeftOutlined, SaveFilled, LoadingOutlined, BankOutlined, IdcardOutlined, PhoneOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import userService from '../../../services/user-service';
 import companyService from '../../../services/company-service';
 dayjs.extend(customParseFormat);
 
 export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showImageUploader, setShowImageUploader] = useState(false);
-  const [userImage, setUserImage] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isDetails, setIsDetails] = useState(false);
-  const [user, setUser] = useState({});
-  const [companies, setCompanies] = useState([]);
+  const [company, setCompany] = useState({});
   const navigate = useNavigate();
-  const dateFormatList = ['DD/MM/YYYY'];
   const [form] = Form.useForm();
   const { notification } = App.useApp();
 
   useEffect(() => {
     const { pathname } = window.location;
-    setIsLoading(true);
     if (pathname.includes('edit') || pathname.includes('details')) {
       if (pathname.includes('edit')) {
         setIsEditing(true);
       } else {
         setIsDetails(true);
       }
-      findUser(pathname.split('/').pop());
-    } else {
-      fetchCompanies().then(() => setIsLoading(false))
+      setIsLoading(true);
+      findCompany(pathname.split('/').pop());
     }
   }, []);
-
-  const fetchCompanies = async () => {
-    companyService.getCompanies(null, 0)
-      .then((response) => {
-        console.log(response.companies)
-        setCompanies(response.companies);
-      }).catch((error) => {
-        error('Erro', 'Não foi possível carregar os dados');
-      })
-  }
 
   const success = (title, message) => {
     notification.success({
@@ -64,17 +45,15 @@ export default function Index() {
     });
   };
 
-  const findUser = (id) => {
-    fetchCompanies().then(() => {
-      userService.findUser(id).then((response) => {
-        setUser(response);
-        form.setFieldsValue({
-          ...response,
-          dataNasc: dayjs(response.dataNasc)
-        })
-        setIsLoading(false);
-      });
-    });
+  const findCompany = (id) => {
+    companyService.findCompany(id).then((response) => {
+      setCompany(response);
+      form.setFieldsValue({
+        ...response,
+        dataNasc: dayjs(response.dataNasc)
+      })
+      setIsLoading(false);
+    })
   }
 
   const onFinish = async (entity) => {
@@ -83,24 +62,24 @@ export default function Index() {
       entity = {
         ...entity,
         dataNasc: entity.dataNasc?.toDate().toISOString() || '',
-        id_endereco: user.id_endereco || 0,
-        id: user.id || 0
+        id_endereco: company.id_endereco || 0,
+        id: company.id || 0
       }
 
       if (!isEditing) {
-        await userService.createUser(entity);
-        success('Sucesso', 'Usuário cadastrado com sucesso!');
+        await companyService.createCompany(entity);
+        success('Sucesso', 'Empresa cadastrada com sucesso!');
       } else {
-        await userService.updateUser(entity.id, entity);
-        success('Sucesso', 'Usuário atualizado com sucesso!');
+        await companyService.updateCompany(entity.id, entity);
+        success('Sucesso', 'Empresa atualizada com sucesso!');
       }
 
       back();
     } catch (err) {
       if (!isEditing) {
-        error('Erro', 'Erro ao cadastrar usuário!');
+        error('Erro', 'Erro ao cadastrar empresa!');
       } else {
-        error('Erro', 'Erro ao atualizar usuário!');
+        error('Erro', 'Erro ao atualizar empresa!');
       }
     } finally {
       setIsSubmitting(false);
@@ -113,59 +92,22 @@ export default function Index() {
 
   const validateMessages = {
     required: 'Campo é obrigatório!',
-    types: {
-      email: 'Email inválido',
-    },
   };
-
-  const onChange = ({ fileList: newFileList }) => {
-    setUserImage(newFileList);
-  };
-
-  const dummyRequest = ({ file, onSuccess }) => {
-    setTimeout(() => {
-      onSuccess("ok");
-      console.log(userImage)
-    }, 0);
-  };
-
-  const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
-  };
-
-  const switchChange = (value) => {
-    if (!value) {
-      setUserImage([]);
-    }
-
-    setShowImageUploader(value);
-  }
 
   return (
     <div className="user-container">
       <div className="dflex justify-content-between">
         {
           isEditing &&
-          <h2>Editar usuário</h2>
+          <h2>Editar empresa</h2>
         }
         {
           isDetails &&
-          <h2>Detalhes do usuário</h2>
+          <h2>Detalhes da empresa</h2>
         }
         {
           (!isEditing && !isDetails) &&
-          <h2>Cadastrar usuário</h2>
+          <h2>Cadastrar empresa</h2>
         }
       </div>
       {!isLoading &&
@@ -174,33 +116,11 @@ export default function Index() {
             form={form}
             layout="vertical"
             onFinish={onFinish}
-            initialValues={user}
+            initialValues={company}
             size="large"
             validateMessages={validateMessages}
             disabled={isSubmitting || isDetails}
           >
-            <Form.Item
-              name="id_empresa"
-              label='Empresa'
-              rules={[
-                {
-                  required: true
-                }
-              ]}
-            >
-              <Select
-                style={{ width: '100%' }}
-                disabled={isDetails || isEditing}
-                options={
-                  companies.map((company) => {
-                    return {
-                      value: company.id,
-                      label: company.nome
-                    }
-                  })
-                }
-              />
-            </Form.Item>
             <Form.Item
               name="nome"
               rules={[
@@ -210,92 +130,23 @@ export default function Index() {
               ]}
               label='Nome'
             >
-              <Input prefix={<UserOutlined />} />
+              <Input prefix={<BankOutlined />} />
             </Form.Item>
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  type: 'email',
-                }
-              ]}
-              label='Email'
-            >
-              <Input prefix={<MailFilled />} />
-            </Form.Item>
-            {(!isEditing && !isDetails) &&
-              <div className="dflex justify-content-between">
-                <Form.Item
-                  className="password-field"
-                  name="senha"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                  label="Senha"
-                >
-                  <Input.Password prefix={<LockFilled />} />
-                </Form.Item>
-                <Form.Item
-                  className="password-field"
-                  name="confirm"
-                  dependencies={['senha']}
-                  rules={[
-                    {
-                      required: true,
-                    },
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (!value || getFieldValue('senha') === value) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Senhas não são iguais!'));
-                      },
-                    }),
-                  ]}
-                  label="Confirmar senha"
-                >
-                  <Input.Password prefix={<LockFilled />} />
-                </Form.Item>
-              </div>
-            }
             <div className="dflex justify-content-between">
               <Form.Item
-                style={{ width: '39%' }}
-                name="dataNasc"
+                style={{ width: '49%' }}
+                name="cnpj"
                 rules={[
                   {
-                    required: false,
+                    required: true,
                   }
                 ]}
-                label="Data de nascimento"
+                label='CNPJ'
               >
-                <DatePicker
-                  style={{ width: '100%' }} format={dateFormatList} inputReadOnly placeholder='' />
+                <Input maxLength={14} minLength={14} prefix={<IdcardOutlined />} />
               </Form.Item>
               <Form.Item
-                style={{ width: '29%' }}
-                name="sexo"
-                rules={[
-                  {
-                    required: false,
-                  }
-                ]}
-                label="Sexo"
-              >
-                <Select
-                  style={{ width: '100%' }}
-                  options={[
-                    { value: 'm', label: 'Masculino' },
-                    { value: 'f', label: 'Feminino' },
-                    { value: 'o', label: 'Outro' },
-                  ]}
-                />
-              </Form.Item>
-              <Form.Item
-                style={{ width: '29%' }}
+                style={{ width: '49%' }}
                 name="telefone"
                 rules={[
                   {
@@ -304,7 +155,7 @@ export default function Index() {
                 ]}
                 label="Telefone"
               >
-                <Input style={{ width: '100%' }} />
+                <Input prefix={<PhoneOutlined />} />
               </Form.Item>
             </div>
             <div className="dflex justify-space-between">
@@ -397,32 +248,6 @@ export default function Index() {
                 <Input />
               </Form.Item>
             </div>
-            {!isDetails &&
-              <Form.Item valuePropName="permite_foto">
-                <Switch onChange={switchChange} />
-                <span style={{ marginLeft: '10px' }}>Capturar imagens</span>
-              </Form.Item>
-            }
-            {showImageUploader &&
-              <Form.Item>
-                <ImgCrop rotationSlider>
-                  <Upload
-                    customRequest={dummyRequest}
-                    listType="picture"
-                    fileList={userImage}
-                    onChange={onChange}
-                    onPreview={onPreview}
-                  >
-                    {userImage.length === 0 &&
-                      <Button htmlType="button">
-                        <CameraFilled />
-                        <span>Adicionar foto</span>
-                      </Button>
-                    }
-                  </Upload>
-                </ImgCrop>
-              </Form.Item>
-            }
             <Form.Item>
               <div className="dflex">
                 <Button htmlType="button" type="text" onClick={back} disabled={isSubmitting}>
@@ -458,8 +283,7 @@ export default function Index() {
           </Form>
         </div>
       }
-      {
-        isLoading &&
+      {isLoading &&
         <div style={{ height: '80%' }}>
           <div className="dflex justify-content-center align-items-center" style={{ height: '90%' }}>
             <Spin
