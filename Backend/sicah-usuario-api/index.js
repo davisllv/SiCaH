@@ -26,6 +26,7 @@ app.get('/empresa/:id', require('./src/empresa/listarEmpresaPorId'))
 app.post('/empresa', require('./src/empresa/criarEmpresa'))
 app.put('/empresa/:id', require('./src/empresa/editarEmpresa'))
 app.delete('/empresa/:id', require('./src/empresa/excluirEmpresa'))
+app.get('/empresa/autocomplete/:search', require('./src/empresa/empresaAutoComplete'))
 
 app.use(function (req, res) {
   res.status(404).json({

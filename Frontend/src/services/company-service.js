@@ -31,6 +31,15 @@ class CompanyService {
   deleteCompany(id) {
     return axios.delete(API_URL + "/empresa/" + id).catch((error) => error);
   }
+
+  getAutocomplete(nome) {
+    return axios.get(API_URL + "/empresa/autocomplete/" + nome)
+      .then((response) => {
+        if (response.data) {
+          return response.data;
+        }
+      }).catch((error) => error);
+  }
 }
 
 const userService = new CompanyService();
