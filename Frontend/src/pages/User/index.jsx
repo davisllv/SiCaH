@@ -1,9 +1,10 @@
 import './style.css'
-import { useState, useEffect } from 'react';
-import { Table, Button, App, Tooltip, Popconfirm, Spin } from 'antd';
+import { useState, useEffect, useMemo } from 'react';
+import { Table, Button, App, Tooltip, Popconfirm, Spin, AutoComplete } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import EmptyResult from '../../assets/empty-result.jpg';
 import { EyeFilled, PlusCircleFilled, SmileFilled, EditFilled, DeleteFilled, LoadingOutlined } from '@ant-design/icons/lib/icons';
+import debounce from 'lodash.debounce';
 import userService from '../../services/user-service';
 import companyService from '../../services/company-service';
 
@@ -19,6 +20,7 @@ export default function User() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isRequesting, setIsRequesting] = useState(false);
   const [changingPage, setChangingPage] = useState(false);
+  const [filteredCompanyId, setFilteredCompanyId] = useState(0);
   const { notification } = App.useApp();
 
   const handleUserHumor = (humor) => {
@@ -158,9 +160,9 @@ export default function User() {
     fetchData(pageSize, skip);
   }
 
-  const fetchData = (take, skip) => {
+  const fetchData = (take, skip, filteredCompanyId) => {
     setChangingPage(true);
-    userService.getUsers(take, skip)
+    userService.getUsers(take, skip, filteredCompanyId)
       .then((response) => {
         setUsers(response.users);
         setTotalUsers(response.total);
@@ -174,23 +176,65 @@ export default function User() {
 
   useEffect(() => {
     setIsRequesting(true);
-    companyService.getCompanies(null, 0).then((companiesData) => {
-      setCompanies(companiesData.companies);
-      fetchData(defaultPageSize, 0);
-    });
+    fetchData(defaultPageSize, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const filterCompanyAutoComplete = (value) => {
+    if (value === '') {
+      setCompanies([]);
+      return;
+    }
+
+    companyService.getAutocomplete(value).then((response) => {
+      setCompanies(response.empresas);
+    })
+  }
+
+  const debounceCompanyAutoComplete = useMemo(() => {
+    return debounce(filterCompanyAutoComplete, 100);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debounceCompanyAutoComplete.cancel();
+    };
+  });
+
   return (
     <div className="user-container">
-      <div className="dflex justify-content-between">
-        <h2>Usuários</h2>
-        <Button variant="light" onClick={navigateToCreate}>
-          <div className="dflex align-items-center">
-            <PlusCircleFilled style={{ marginRight: '10px' }} />
-            <span style={{ fontWeight: '600' }}>Adicionar usuário</span>
+      <div className="dflex flex-column">
+        <div className="dflex justify-content-between">
+          <h2>Usuários</h2>
+          <Button variant="light" onClick={navigateToCreate}>
+            <div className="dflex align-items-center">
+              <PlusCircleFilled style={{ marginRight: '10px' }} />
+              <span style={{ fontWeight: '600' }}>Adicionar usuário</span>
+            </div>
+          </Button>
+        </div>
+        {!isRequesting &&
+          <div>
+            <AutoComplete
+              placeholder="Filtrar por empresa"
+              allowClear={true}
+              onClear={() => {
+                fetchData(pageSize, 0, 0);
+                setFilteredCompanyId(0);
+              }}
+              autoClearSearchValue={true}
+              options={
+                companies.length > 0 ? companies.map((company) => ({ value: company.nome, label: company.nome })) : []
+              }
+              style={{ width: 300, marginBottom: '1rem' }}
+              onSelect={(value) => {
+                fetchData(pageSize, 0, companies.filter((company) => company.nome === value)[0].id);
+                setFilteredCompanyId(companies.filter((company) => company.nome === value)[0].id);
+              }}
+              onChange={debounceCompanyAutoComplete}
+            />
           </div>
-        </Button>
+        }
       </div>
       {(users.length === 0 && !isRequesting) &&
         <div className="empty-result">
