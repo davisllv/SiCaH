@@ -2,8 +2,8 @@ import axios from "axios";
 const API_URL = "http://localhost:3000";
 
 class UserService {
-  getUsers(take, skip) {
-    return axios.get(API_URL + `/usuarios?skip=${skip}&take=${take}`)
+  getUsers(take, skip, companyId) {
+    return axios.get(API_URL + `/usuarios?skip=${skip}&take=${take}&companyId=${companyId}`)
       .then((response) => {
         if (response.data) {
           return response.data;
