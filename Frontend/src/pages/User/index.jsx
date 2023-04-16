@@ -13,6 +13,7 @@ export default function User() {
   const [open, setOpen] = useState({});
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [users, setUsers] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [pageSize, setPageSize] = useState(defaultPageSize);
   const [currentPage, setCurrentPage] = useState(1);
@@ -94,6 +95,17 @@ export default function User() {
       render: (text) => text,
     },
     {
+      title: 'Empresa',
+      dataIndex: 'nome_empresa',
+      render: (text) => text || 'Nao informado',
+      filters: companies.map((company) => ({
+        text: company.nome,
+        value: company.id,
+      })),
+      onFilter: (value, record) => record.nome_empresa.indexOf(value) === 0,
+      filterSearch: true,
+    },
+    {
       title: 'Email',
       dataIndex: 'email',
       render: (text) => text,
@@ -168,7 +180,11 @@ export default function User() {
 
   useEffect(() => {
     setIsRequesting(true);
-    fetchData(defaultPageSize, 0);
+    companyService.getCompanies(null, 0).then((companiesData) => {
+      setCompanies(companiesData.companies);
+      fetchData(defaultPageSize, 0);
+    });
+
   }, [])
 
   return (
