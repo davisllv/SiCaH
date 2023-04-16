@@ -98,12 +98,6 @@ export default function User() {
       title: 'Empresa',
       dataIndex: 'nome_empresa',
       render: (text) => text || 'Nao informado',
-      filters: companies.map((company) => ({
-        text: company.nome,
-        value: company.id,
-      })),
-      onFilter: (value, record) => record.nome_empresa.indexOf(value) === 0,
-      filterSearch: true,
     },
     {
       title: 'Email',
@@ -152,7 +146,7 @@ export default function User() {
     }
   ]
 
-  const onShowSizeChange = (current, pageSize) => {
+  const onShowSizeChange = (_, pageSize) => {
     setPageSize(pageSize);
     fetchData(pageSize, 0);
     setCurrentPage(1);
@@ -184,8 +178,8 @@ export default function User() {
       setCompanies(companiesData.companies);
       fetchData(defaultPageSize, 0);
     });
-
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="user-container">
