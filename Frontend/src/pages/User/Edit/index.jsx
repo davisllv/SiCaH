@@ -43,7 +43,6 @@ export default function Index() {
   const fetchCompanies = async () => {
     companyService.getCompanies(null, 0)
       .then((response) => {
-        console.log(response.companies)
         setCompanies(response.companies);
       }).catch((error) => {
         error('Erro', 'Não foi possível carregar os dados');
@@ -190,7 +189,7 @@ export default function Index() {
             >
               <Select
                 style={{ width: '100%' }}
-                disabled={isDetails || isEditing}
+                disabled={isDetails || (isEditing && user.id_empresa)}
                 options={
                   companies.map((company) => {
                     return {
