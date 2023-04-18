@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "dev": "nodemon index.js",
-    "prod": "node index.js"
+    "dev": "nodemon --watch ./src src/Server.ts",
+    "prod": "node index.js",
+    "build": "tsc"
   },
   "author": "Igor Zysko",
   "license": "ISC",
@@ -19,6 +20,8 @@
     "nodemon": "^2.0.22"
   },
   "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/mssql": "^8.1.2",
     "eslint": "^8.37.0"
   }
 }
