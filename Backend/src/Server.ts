@@ -4,7 +4,9 @@ App.listen(3000, () => {
   console.log(
     "---------------------------------------------------------------------------------------------------------"
   );
-  console.log("Servidor da API iniciado na porta 3000 em " + Date());
+  console.log(
+    "Servidor da API (Typescript) iniciado na porta 3000 em " + Date()
+  );
   console.log(
     "---------------------------------------------------------------------------------------------------------"
   );

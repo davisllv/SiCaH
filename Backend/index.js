@@ -5,7 +5,7 @@ const express = require('express')
 const app = express()
 app.use(morgan('dev'))
 app.use(helmet())
-app.use(cors()) 
+app.use(cors())
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
@@ -15,11 +15,18 @@ app.use(function (req, res, next) {
 })
 app.use(express.json())
 
-app.get('/usuarios', require('./src/usuario/listarUsuarios'))
-app.get('/usuario/:id', require('./src/usuario/listarUsuarioPorId'))
-app.post('/usuario', require('./src/usuario/criarUsuario'))
-app.put('/usuario/:id', require('./src/usuario/editarUsuario'))
-app.delete('/usuario/:id', require('./src/usuario/excluirUsuario'))
+app.get('/usuarios', require('./sicah-usuario-api/src/usuario/listarUsuarios'))
+app.get('/usuario/:id', require('./sicah-usuario-api/src/usuario/listarUsuarioPorId'))
+app.post('/usuario', require('./sicah-usuario-api/src/usuario/criarUsuario'))
+app.put('/usuario/:id', require('./sicah-usuario-api/src/usuario/editarUsuario'))
+app.delete('/usuario/:id', require('./sicah-usuario-api/src/usuario/excluirUsuario'))
+
+app.get('/empresas', require('./sicah-usuario-api/src/empresa/listarEmpresas'))
+app.get('/empresa/:id', require('./sicah-usuario-api/src/empresa/listarEmpresaPorId'))
+app.post('/empresa', require('./sicah-usuario-api/src/empresa/criarEmpresa'))
+app.put('/empresa/:id', require('./sicah-usuario-api/src/empresa/editarEmpresa'))
+app.delete('/empresa/:id', require('./sicah-usuario-api/src/empresa/excluirEmpresa'))
+app.get('/empresa/autocomplete/:search', require('./sicah-usuario-api/src/empresa/empresaAutoComplete'))
 
 app.use(function (req, res) {
   res.status(404).json({
@@ -29,9 +36,8 @@ app.use(function (req, res) {
 
 
 app.listen(3000, function () {
-    console.log('---------------------------------------------------------------------------------------------------------')
-    console.log('Servidor da API iniciado na porta 3000 em ' + Date())
-    console.log('---------------------------------------------------------------------------------------------------------')
-  })
+  console.log('---------------------------------------------------------------------------------------------------------')
+  console.log("Servidor da API (Javascript) iniciado na porta 3000 em " + Date())
+  console.log('---------------------------------------------------------------------------------------------------------')
+})
 
-  

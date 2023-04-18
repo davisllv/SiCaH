@@ -37,7 +37,7 @@ app.use(function (req, res) {
 
 app.listen(3000, function () {
   console.log('---------------------------------------------------------------------------------------------------------')
-  console.log('Servidor da API iniciado na porta 3000 em ' + Date())
+  console.log("Servidor da API (Javascript) iniciado na porta 3000 em " + Date())
   console.log('---------------------------------------------------------------------------------------------------------')
 })
 

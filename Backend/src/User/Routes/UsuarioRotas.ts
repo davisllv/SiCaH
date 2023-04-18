@@ -5,4 +5,6 @@ const Rota = Router();
 
 Rota.get("/", UsuarioController.index);
 
+Rota.get("/:id", UsuarioController.show);
+
 export default Rota;
