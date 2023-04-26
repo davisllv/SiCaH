@@ -3,7 +3,7 @@ const API_URL = "http://localhost:3000";
 
 class CompanyService {
   getCompanies(take, skip) {
-    return axios.get(API_URL + `/empresas?skip=${skip}&take=${take}`)
+    return axios.get(API_URL + `/empresa?skip=${skip}&take=${take}`)
       .then((response) => {
         if (response.data) {
           return response.data;

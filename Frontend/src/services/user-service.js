@@ -3,7 +3,7 @@ const API_URL = "http://localhost:3000";
 
 class UserService {
   getUsers(take, skip, companyId) {
-    return axios.get(API_URL + `/usuarios?skip=${skip}&take=${take}&companyId=${companyId}`)
+    return axios.get(API_URL + `/usuario?skip=${skip}&take=${take}&companyId=${companyId}`)
       .then((response) => {
         if (response.data) {
           return response.data;
