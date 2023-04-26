@@ -1,9 +1,9 @@
-import DataBaseConection from "@src/lib/DataBaseConection";
+import DataBaseConection from "../../lib/DataBaseConection";
 import EnderecoController from "../Controller/EnderecoController";
 
 class UsuarioService {
   public async showAll (data: any): Promise<any> {
-    const { take, skip } = data.query;
+    const { take, skip } = data;
     const query = `
     SELECT id, nome, email, permite_foto, COUNT(*) OVER() as Total FROM banco01.dbo.usuario 
     ORDER BY nome

@@ -2,11 +2,11 @@
   "name": "sicah-modelo-api",
   "version": "1.0.0",
   "description": "Api rest modelo",
-  "main": "index.js",
+  "main": "./src/Server.ts",
   "scripts": {
     "test": "test",
-    "dev": "nodemon --watch index.js",
-    "prod": "node index.js",
+    "dev": "nodemon --watch ./src ./src/Server.ts",
+    "prod": "node ./src ./src/Server.ts",
     "build": "tsc"
   },
   "author": "Igor Zysko",
@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/mssql": "^8.1.2",
-    "eslint": "^8.37.0"
+    "eslint": "^8.37.0",
+    "ts-node": "^10.9.1"
   }
 }

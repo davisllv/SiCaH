@@ -1,4 +1,4 @@
-import DataBaseConection from "@src/lib/DataBaseConection";
+import DataBaseConection from "../../lib/DataBaseConection";
 
 class EnderecoService {
   public async create (data: any): Promise<any> {
