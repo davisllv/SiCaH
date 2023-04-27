@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import UsuarioService from "../Services/UsuarioService";
 import EnderecoService from "../Services/EnderecoService";
+import { gerarToken } from "../../lib/authJwt";
+
 
 class UsuarioController {
   public async index (request: Request, response: Response): Promise<Response> {
@@ -10,7 +12,7 @@ class UsuarioController {
 
   public async show (request: Request, response: Response): Promise<Response> {
     const usuario: any = await UsuarioService.show(request.params);
-    return response.status(200).json(usuario[0]);
+    return response.status(200).json(usuario);
   }
 
   public async create (request: Request, response: Response): Promise<Response> {
@@ -29,6 +31,12 @@ class UsuarioController {
     await EnderecoService.delete(usuario[0].id_endereco);
     return response.status(200).json({});
   }
+
+  public async login (request: Request, response: Response): Promise<Response> {
+    let usuario = await UsuarioService.login(request.body);
+    return response.status(200).json({...usuario, token: `Bearer ${gerarToken(usuario)}`});
+  }
+
 }
 
 export default new UsuarioController();

@@ -1,6 +1,6 @@
 import DataBaseConection from "../../lib/DataBaseConection";
 import EnderecoController from "../Controller/EnderecoController";
-
+import md5 from "md5";
 class UsuarioService {
   public async showAll (data: any): Promise<any> {
     const { take, skip } = data;
@@ -28,11 +28,11 @@ class UsuarioService {
 
   public async create (data: any): Promise<any> {
     const output = await EnderecoController.create({ ...data });
-    const query = `INSERT INTO usuario (nome, nomeUsuario, senha, cpf, dataNasc, sexo, email, telefone, id_endereco, permite_foto, id_empresa)
+    let query = `INSERT INTO usuario (nome, nomeUsuario, senha, cpf, dataNasc, sexo, email, telefone, id_endereco, permite_foto, id_empresa)
       VALUES(
       '${data.nome}', 
       '${data.nomeUsuario || ""}',
-      '${data.senha}', 
+      '${md5(data.senha)}', 
       '${data.cpf || ""}', 
       '${data.dataNasc || ""}', 
       '${data.sexo || ""}', 
@@ -42,7 +42,7 @@ class UsuarioService {
       '${data.permite_foto || 0}',
       '${data.id_empresa || ""}')`;
 
-    const result = await DataBaseConection.Executar("insert", query);
+    let result = await DataBaseConection.Executar("insert", query);
     return result;
   }
 
@@ -55,6 +55,12 @@ class UsuarioService {
 
     await DataBaseConection.Executar("update", query);
     return {};
+  }
+
+  public async login (data: any): Promise<{}> {
+    let query = `SELECT id,nomeUsuario,id_empresa,email FROM banco01.dbo.usuario WHERE email = '${data.email}' and senha = '${md5(data.senha)}'`
+    let result = await DataBaseConection.Executar("select", query);
+    return result;
   }
 
   public async delete (data: any): Promise<any> {
