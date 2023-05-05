@@ -1,30 +1,36 @@
 import axios from "axios";
 
 // TODO: adicionar url da API
-const API_URL = "";
+const API_URL = "http://localhost:3000";
 
 class AuthService {
-  login(username, password) {
-    return axios.post(API_URL + "/login", {
-      username,
+  login(email, password) {
+    return axios.post(API_URL + "/usuario/login", {
+      email,
       password
     }).then(response => {
       if (response.data) {
-        // TODO: Verificar se o objeto contém o token JWT e salvar o objeto no localStorage com a chave 'user'
+        localStorage.setItem("user", JSON.stringify(response.data));
       }
 
-      return response.data;
+      return { status: 200 };
+    }).catch(error => {
+      const response = {
+        message: '',
+        error: 404
+      }
+      if (error.message.includes('404')) {
+        response.message = error.response.data.message;
+      } else {
+        response.message = 'Verifique sua conexão com a internet e tente novamente';
+      }
+
+      return response;
     });
   }
 
   logout() {
     localStorage.removeItem("user");
-  }
-
-  register(/*TODO: a definir*/) {
-    return axios.post(API_URL + "signup", {
-      /*TODO: a definir*/
-    });
   }
 
   getCurrentUser() {

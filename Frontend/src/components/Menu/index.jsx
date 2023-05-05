@@ -7,15 +7,26 @@ import {
   UserOutlined,
   ApiFilled,
   BankOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import "./style.css";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useCallback } from "react";
 
 const { Sider } = Layout;
 
 export default function MenuComponent() {
+  const location = useLocation();
+  const [current, setCurrent] = useState('/home');
+  useEffect(() => {
+    if (location) {
+      if (current !== location.pathname) {
+        setCurrent(`/${location.pathname.split('/')[1]}`);
+      }
+    }
+  }, [location, current]);
+
   const navigate = useNavigate();
   function getItem(label, key, icon, children) {
     return {
@@ -32,16 +43,16 @@ export default function MenuComponent() {
     getItem("Equipamentos", "/equipament", <ToolFilled />),
     getItem("Empresas", "/company", <BankOutlined />),
     getItem("Usuários", "/user", <UserOutlined />),
-    getItem("Interações", "/integration", <ApiFilled />),
-    getItem("Imagens", "/images", <CameraFilled />),
+    getItem("Integrações", "/integration", <ApiFilled />),
+    // getItem("Imagens", "/images", <CameraFilled />),
+    getItem("Sair", "/logout", <LogoutOutlined />)
   ];
 
   const [closedMenu, setClosedMenu] = useState(false);
 
-  const handleNavigation = useCallback(
-    (key) => {
-      navigate(key);
-    },
+  const handleNavigation = useCallback((key) => {
+    navigate(key);
+  },
     [navigate]
   );
   return (
@@ -53,7 +64,8 @@ export default function MenuComponent() {
       >
         <Menu
           theme="dark"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[current]}
+          selectedKeys={[current]}
           mode="inline"
           items={items}
           onClick={(ev) => handleNavigation(ev.key)}

@@ -5,7 +5,7 @@ import { App, Button, Checkbox, Form, Input, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import LoginImage from "../../assets/login.svg";
 import { useCallback, useState } from "react";
-import LoginService from "../../services/LoginService";
+import AuthService from "../../services/auth-service";
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,14 +24,12 @@ export default function Login() {
     async (data) => {
       try {
         setIsLoading(true);
-        const response = await LoginService.store({
-          params: data,
-        });
-
-        console.log(response);
+        const response = await AuthService.login(data.email, data.password);
 
         if (response.status === 200) {
           navigate("/home");
+        } else {
+          TratarErro("Erro", response.message);
         }
 
         setIsLoading(false);

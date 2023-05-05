@@ -1,5 +1,5 @@
 import "antd/dist/reset.css";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { App } from "antd";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -10,18 +10,22 @@ import EditUser from "./pages/User/Edit";
 import Company from "./pages/Company";
 import EditCompany from "./pages/Company/Edit";
 import Integracao from "./pages/Integracao";
+import Logout from "./pages/Logout";
 
 function EntryComponent() {
-  const location = useLocation();
   const user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : null;
   let app;
-  if (location.pathname === "/") {
+  if (!user) {
     app = (
       <>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="*"
+            element={<Navigate to="/login" replace />}
+          />
         </Routes>
       </>
     );
@@ -40,6 +44,11 @@ function EntryComponent() {
           <Route path="company/create" element={<EditCompany />}></Route>
           <Route path="company/edit/:id" element={<EditCompany />}></Route>
           <Route path="company/details/:id" element={<EditCompany />}></Route>
+          <Route path="Logout" element={<Logout />} />
+          <Route
+            path="*"
+            element={<Navigate to="home" replace />}
+          />
         </Routes>
       </div>
     );

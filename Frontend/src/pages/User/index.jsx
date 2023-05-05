@@ -167,7 +167,11 @@ export default function User() {
         setUsers(response.users);
         setTotalUsers(response.total);
       }).catch((error) => {
-        error('Erro', 'Não foi possível carregar os dados');
+        if (error.message) {
+          error('Erro', error.message);
+        } else {
+          error('Erro', 'Não foi possível carregar os dados');
+        }
       }).finally(() => {
         setIsRequesting(false);
         setChangingPage(false);
