@@ -1,12 +1,13 @@
 import { Router } from "express";
 import EmpresaController from "../Controller/EmpresaController";
+import { autenticarJWT } from "../../lib/authJwt";
 
 const Rota = Router();
 
-Rota.get("/", EmpresaController.index);
-Rota.get("/:id", EmpresaController.show);
-Rota.put("/:id", EmpresaController.edit);
-Rota.delete("/:id", EmpresaController.delete);
-Rota.post("/", EmpresaController.create);
+Rota.get("/", autenticarJWT, EmpresaController.index);
+Rota.get("/:id", autenticarJWT, EmpresaController.show);
+Rota.put("/:id", autenticarJWT, EmpresaController.edit);
+Rota.delete("/:id", autenticarJWT, EmpresaController.delete);
+Rota.post("/", autenticarJWT, EmpresaController.create);
 
 export default Rota;
