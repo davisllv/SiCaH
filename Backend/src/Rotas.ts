@@ -4,6 +4,7 @@ import EmpresaRotas from "./User/Routes/EmpresaRotas";
 
 const Rota = Router();
 Rota.use("/usuario", UsuarioRotas);
+
 Rota.use("/empresa", EmpresaRotas);
 
 export default Rota;

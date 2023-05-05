@@ -1,21 +1,47 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import "./style.css";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Spin } from "antd";
+import { App, Button, Checkbox, Form, Input, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import LoginImage from "../../assets/login.svg";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import LoginService from "../../services/LoginService";
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+  const { notification } = App.useApp();
 
   const navigate = useNavigate();
-  const onFinish = (values) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/home");
-    }, 3000);
+
+  const TratarErro = (title, message) => {
+    notification.error({
+      message: title,
+      description: message,
+    });
   };
+
+  const handleSubmit = useCallback(
+    async (data) => {
+      try {
+        setIsLoading(true);
+        const response = await LoginService.store({
+          params: data,
+        });
+
+        console.log(response);
+
+        if (response.status === 200) {
+          navigate("/home");
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        TratarErro("Erro", "Email ou Senha Incorretos!");
+        setIsLoading(false);
+      }
+    },
+    [TratarErro, navigate]
+  );
 
   return (
     <div className="principal_container">
@@ -29,12 +55,12 @@ export default function Login() {
           <Form
             layout="vertical"
             className="login_form"
-            onFinish={onFinish}
+            onFinish={handleSubmit}
             disabled={isLoading}
             size="large"
           >
             <Form.Item
-              name="username"
+              name="email"
               rules={[
                 {
                   required: true,
