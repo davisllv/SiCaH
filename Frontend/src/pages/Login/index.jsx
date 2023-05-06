@@ -88,17 +88,6 @@ export default function Login() {
                 placeholder="Senha"
               />
             </Form.Item>
-
-            <div className="actions_container">
-              <Form.Item name="rememberMe" className="dflex flex-column">
-                <Checkbox>Remember me</Checkbox>
-              </Form.Item>
-
-              <Form.Item>
-                <a href="/">Esqueceu a Senha?</a>
-              </Form.Item>
-            </div>
-
             <Form.Item>
               {!isLoading && (
                 <Button htmlType="submit" className="button_entrar">
