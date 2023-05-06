@@ -27,12 +27,12 @@ export default function Login() {
         const response = await AuthService.login(data.email, data.password);
 
         if (response.status === 200) {
-          navigate("/home");
+          window.location.reload();
         } else {
           TratarErro("Erro", response.message);
+          setIsLoading(false);
         }
 
-        setIsLoading(false);
       } catch (err) {
         TratarErro("Erro", "Email ou Senha Incorretos!");
         setIsLoading(false);
