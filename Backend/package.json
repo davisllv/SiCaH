@@ -7,7 +7,8 @@
     "test": "test",
     "dev": "nodemon --watch ./src ./src/Server.ts",
     "prod": "node ./src ./src/Server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "ts-node ./src/Server.ts"
   },
   "author": "Igor Zysko",
   "license": "ISC",

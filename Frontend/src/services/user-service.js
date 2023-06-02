@@ -1,6 +1,6 @@
 import axios from "axios";
 import authHeader from "./auth-header";
-const API_URL = "http://localhost:3000";
+const API_URL = "https://apisicah.azurewebsites.net";
 
 class UserService {
   getUsers(take, skip, companyId) {

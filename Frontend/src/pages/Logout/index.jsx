@@ -18,7 +18,8 @@ export default function Logout() {
       icon: <ExclamationCircleFilled />,
       content: 'Deseja realmente sair?',
       onOk() {
-        console.log('OK');
+        localStorage.clear();
+        window.location.reload();
       },
       onCancel() {
         navigate('/home')

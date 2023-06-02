@@ -39,5 +39,8 @@
   },
   "diffEditor.ignoreTrimWhitespace": false,
   "eslint.workingDirectories": [],
-  "totvsLanguageServer.welcomePage": false
+  "totvsLanguageServer.welcomePage": false,
+  "appService.showBuildDuringDeployPrompt": false,
+  "appService.defaultWebAppToDeploy": "/subscriptions/98bcf85e-fa4f-4349-b8c8-f69cfbb1abde/resourceGroups/SICAH-FTEC/providers/Microsoft.Web/sites/apisicah",
+  "appService.deploySubpath": "dist"
 }
