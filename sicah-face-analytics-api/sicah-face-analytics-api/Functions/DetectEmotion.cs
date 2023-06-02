@@ -76,7 +76,7 @@ namespace sicah_face_analytics_api.Functions
                     {
                         Bytes = pictureStream
                     },
-                    Attributes = new List<string> { Attribute.EMOTIONS }
+                    Attributes = new List<string> { Attribute.ALL }
                 };
 
 
@@ -123,8 +123,9 @@ namespace sicah_face_analytics_api.Functions
             catch (Exception ex)
             {
                 _logger.Log(LogLevel.Information, ex.Message);
-                throw;
             }
+
+            return Factory.HttpResponseDataFactory(req, HttpStatusCode.BadRequest, "Ocorreu um erro ao processar a imagem.", Constants.ContentType, Constants.ContentTypeText);
         }
     }
 }
