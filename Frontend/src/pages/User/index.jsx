@@ -20,7 +20,6 @@ export default function User() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isRequesting, setIsRequesting] = useState(false);
   const [changingPage, setChangingPage] = useState(false);
-  const [filteredCompanyId, setFilteredCompanyId] = useState(0);
   const { notification } = App.useApp();
 
   const handleUserHumor = (humor) => {
@@ -224,7 +223,6 @@ export default function User() {
               allowClear={true}
               onClear={() => {
                 fetchData(pageSize, 0, 0);
-                setFilteredCompanyId(0);
               }}
               autoClearSearchValue={true}
               options={
@@ -233,7 +231,6 @@ export default function User() {
               style={{ width: 300, marginBottom: '1rem' }}
               onSelect={(value) => {
                 fetchData(pageSize, 0, companies.filter((company) => company.nome === value)[0].id);
-                setFilteredCompanyId(companies.filter((company) => company.nome === value)[0].id);
               }}
               onChange={debounceCompanyAutoComplete}
             />

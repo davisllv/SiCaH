@@ -2,7 +2,6 @@ import React, { Layout, Menu } from "antd";
 import {
   HomeFilled,
   FileTextFilled,
-  CameraFilled,
   ToolFilled,
   UserOutlined,
   ApiFilled,

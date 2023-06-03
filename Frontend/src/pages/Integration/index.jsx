@@ -2,7 +2,7 @@ import "./style.css";
 import { useCallback, useState } from "react";
 import { Form, Button, Spin, Input } from "antd";
 
-export default function Integracao() {
+export default function Integration() {
   const [isLoading, setIsLoading] = useState(false);
   const [form] = Form.useForm();
 

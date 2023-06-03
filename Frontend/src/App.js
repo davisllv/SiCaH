@@ -1,5 +1,5 @@
 import "antd/dist/reset.css";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { App } from "antd";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -9,8 +9,9 @@ import User from "./pages/User";
 import EditUser from "./pages/User/Edit";
 import Company from "./pages/Company";
 import EditCompany from "./pages/Company/Edit";
-import Integracao from "./pages/Integracao";
+import Integration from "./pages/Integration";
 import Logout from "./pages/Logout";
+import Report from "./pages/Report";
 
 function EntryComponent() {
   const user = localStorage.getItem("user")
@@ -34,7 +35,7 @@ function EntryComponent() {
       <div className="dflex">
         <Menu />
         <Routes>
-          <Route path="integration" element={<Integracao />} />
+          <Route path="integration" element={<Integration />} />
           <Route path="home" element={<Home />} />
           <Route path="user" element={<User />}></Route>
           <Route path="user/create" element={<EditUser />}></Route>
@@ -44,6 +45,7 @@ function EntryComponent() {
           <Route path="company/create" element={<EditCompany />}></Route>
           <Route path="company/edit/:id" element={<EditCompany />}></Route>
           <Route path="company/details/:id" element={<EditCompany />}></Route>
+          <Route path="report" element={<Report />}></Route>
           <Route path="Logout" element={<Logout />} />
           <Route
             path="*"

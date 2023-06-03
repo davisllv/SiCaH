@@ -10,6 +10,7 @@ export default function Logout() {
 
   useEffect(() => {
     showConfirm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showConfirm = () => {

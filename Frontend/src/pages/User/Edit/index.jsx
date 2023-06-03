@@ -14,7 +14,7 @@ dayjs.extend(customParseFormat);
 export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showImageUploader, setShowImageUploader] = useState(false);
+  const [showImageUploader, setShowImageUploader] = useState(true);
   const [userImage, setUserImage] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isDetails, setIsDetails] = useState(false);

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // TODO: adicionar url da API
-const API_URL = "https://apisicah.azurewebsites.net";
+const API_URL = "http://localhost:3000";
 
 class AuthService {
   login(email, password) {

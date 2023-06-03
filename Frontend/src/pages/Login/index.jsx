@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./style.css";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { App, Button, Checkbox, Form, Input, Spin } from "antd";
+import { App, Button, Form, Input, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import LoginImage from "../../assets/login.svg";
 import { useCallback, useState } from "react";
@@ -13,7 +13,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const TratarErro = (title, message) => {
+  const tratarErro = (title, message) => {
     notification.error({
       message: title,
       description: message,
@@ -29,16 +29,16 @@ export default function Login() {
         if (response.status === 200) {
           window.location.reload();
         } else {
-          TratarErro("Erro", response.message);
+          tratarErro("Erro", response.message);
           setIsLoading(false);
         }
 
       } catch (err) {
-        TratarErro("Erro", "Email ou Senha Incorretos!");
+        tratarErro("Erro", "Email ou Senha Incorretos!");
         setIsLoading(false);
       }
     },
-    [TratarErro, navigate]
+    [tratarErro, navigate]
   );
 
   return (
