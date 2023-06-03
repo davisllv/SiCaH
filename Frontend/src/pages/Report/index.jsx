@@ -1,6 +1,6 @@
 import './style.css';
-import { useState, useEffect, useCallback } from 'react';
-import { CameraFilled, CloudUploadOutlined, InboxOutlined, LoadingOutlined } from '@ant-design/icons/lib/icons';
+import { useState } from 'react';
+import { InboxOutlined } from '@ant-design/icons/lib/icons';
 import { App, List, Form } from 'antd';
 import Dragger from 'antd/es/upload/Dragger';
 
@@ -8,7 +8,7 @@ export default function Report() {
   const [emotions, setEmotions] = useState([]);
   const [selectedImage, setSelectedImage] = useState([]);
   const { notification } = App.useApp();
-  const apiUrl = 'http://localhost:7156/api/DetectEmotion';
+  const emotionApiUrl = 'https://sicah-analysis.azurewebsites.net/api/DetectEmotion';
 
   const onImageChange = (data) => {
     setSelectedImage(data.fileList);
@@ -47,7 +47,7 @@ export default function Report() {
 
   const props = {
     name: 'file',
-    action: apiUrl,
+    action: emotionApiUrl,
     multiple: false,
   };
 
