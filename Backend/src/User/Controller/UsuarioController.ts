@@ -3,7 +3,6 @@ import UsuarioService from "../Services/UsuarioService";
 import EnderecoService from "../Services/EnderecoService";
 import { gerarToken } from "../../lib/authJwt";
 
-
 class UsuarioController {
   public async index (request: Request, response: Response): Promise<Response> {
     console.log('request.query', request.query)

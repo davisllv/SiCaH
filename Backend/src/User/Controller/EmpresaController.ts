@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import DataBaseConection from "../../lib/DataBaseConection";
-import EnderecoController from "./EnderecoController";
 import EmpresaService from "../Services/EmpresaService";
 
 class EmpresaController {
