@@ -1,43 +1,84 @@
+using System.Net;
+using Amazon.Rekognition;
 using Amazon.Rekognition.Model;
 using HttpMultipartParser;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using sicah_face_analytics_api.Models;
 using sicah_face_analytics_api.Shared;
-using System.Net;
 using Attribute = Amazon.Rekognition.Attribute;
 
 namespace sicah_face_analytics_api.Functions
 {
-    public class DetectEmotion
+    public class DetectUserEmotion
     {
         private readonly RecognitionClient _recognitionClient;
         private readonly ILogger _logger;
 
-        public DetectEmotion(RecognitionClient recognitionClient, ILoggerFactory loggerFactory)
+        public DetectUserEmotion(RecognitionClient recognitionClient, ILoggerFactory loggerFactory)
         {
             _recognitionClient = recognitionClient;
             _logger = loggerFactory.CreateLogger<DetectEmotion>();
         }
 
-        [Function("DetectEmotion")]
+        [Function("DetectUserEmotion")]
         public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
         {
             try
             {
                 var formData = await MultipartFormDataParser.ParseAsync(req.Body);
-                var picture = formData.Files[0];
-                var data = picture.Data;
-                data.Position = 0;
-                var ms = new MemoryStream();
-                data.CopyTo(ms); 
-                ms.Position = 0;
+                var body = await new StreamReader(req.Body).ReadToEndAsync();
+                var image = formData.Files[0];
+                var detectEmotionInput = JsonConvert.DeserializeObject<DetectEmotionInput>(body);
+                if (detectEmotionInput == null)
+                {
+                    return Factory.HttpResponseDataFactory
+                    (
+                       req,
+                       HttpStatusCode.BadRequest,
+                       "Certifique-se de que foram informados o id do usuário e a imagem em formato base64",
+                       Constants.ContentType,
+                       Constants.ContentTypeText
+                    );
+                }
+
+                if (detectEmotionInput.UserId == 0)
+                {
+                    return Factory.HttpResponseDataFactory
+                    (
+                        req,
+                        HttpStatusCode.BadRequest,
+                        "Certifique-se de que o id do usuário é válido",
+                        Constants.ContentType,
+                        Constants.ContentTypeText
+                    );
+                }
+
+                if (string.IsNullOrEmpty(detectEmotionInput.Base64))
+                {
+                    return Factory.HttpResponseDataFactory
+                    (
+                        req,
+                        HttpStatusCode.BadRequest,
+                        "Certifique-se de que a imagem está em formato base64",
+                        Constants.ContentType,
+                        Constants.ContentTypeText
+                    );
+                }
+
+                byte[] picture = Convert.FromBase64String(detectEmotionInput.Base64 ?? "");
+                var pictureStream = new MemoryStream(picture)
+                {
+                    Position = 0
+                };
+
                 var request = new DetectFacesRequest
                 {
                     Image = new Image()
                     {
-                        Bytes = ms
+                        Bytes = pictureStream
                     },
                     Attributes = new List<string> { Attribute.ALL }
                 };
@@ -50,24 +91,17 @@ namespace sicah_face_analytics_api.Functions
                     return Factory.HttpResponseDataFactory(req, HttpStatusCode.OK, "Nenhum rosto foi encontrado", Constants.ContentType, Constants.ContentTypeText);
                 }
 
-                var emotionsOutput = new List<Dictionary<string, dynamic>>();
                 if (response.FaceDetails.Count == 1)
                 {
                     var faceDetail = response.FaceDetails[0];
-                    var emotions = faceDetail.Emotions.OrderByDescending(emotion => emotion.Confidence);
-                    foreach (var emotion in emotions)
-                    {
-                        var dic = new Dictionary<string, dynamic>
-                        {
-                            { "emotion", Constants.TranslatedEmotions[emotion.Type] },
-                            { "confidence", emotion.Confidence }
-                        };
-                        
-                        emotionsOutput.Add(dic);
-                    }
+                    var highestConfidenceEmotion = faceDetail.Emotions.MaxBy(emotion => emotion.Confidence);
+                    var dic = new Dictionary<string, dynamic>
+                {
+                    { "emocao", Constants.TranslatedEmotions[highestConfidenceEmotion!.Type] },
+                    { "confianca", highestConfidenceEmotion!.Confidence }
+                };
 
-
-                    var dicAsJson = JsonConvert.SerializeObject(emotionsOutput);
+                    var dicAsJson = JsonConvert.SerializeObject(dic);
                     return Factory.HttpResponseDataFactory(req, HttpStatusCode.OK, dicAsJson, Constants.ContentType, Constants.ContentTypeJson);
                 }
                 else
@@ -78,10 +112,10 @@ namespace sicah_face_analytics_api.Functions
                     {
                         var highestConfidenceEmotion = faceDetail.Emotions.MaxBy(emotion => emotion.Confidence);
                         var dic = new Dictionary<string, dynamic>
-                        {
-                            { "emocao", Constants.TranslatedEmotions[highestConfidenceEmotion!.Type] },
-                            { "confianca", highestConfidenceEmotion!.Confidence }
-                        };
+                    {
+                        { "emocao", Constants.TranslatedEmotions[highestConfidenceEmotion!.Type] },
+                        { "confianca", highestConfidenceEmotion!.Confidence }
+                    };
 
                         listResponse.Add(dic);
                     }
