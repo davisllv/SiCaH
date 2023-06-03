@@ -18,15 +18,15 @@ export default function Integration() {
         form={form}
       >
         <Form.Item label="Endereço do Banco de Dados">
-          <Input type="text" placeholder="Enter email" />
+          <Input type="text" placeholder="Endereço" />
         </Form.Item>
 
         <Form.Item label="Usuário">
-          <Input type="text" placeholder="Usuário" />
+          <Input type="text" placeholder="Login" />
         </Form.Item>
 
         <Form.Item label="Password">
-          <Input type="password" placeholder="Password" />
+          <Input type="password" placeholder="Senha" />
         </Form.Item>
 
         <div className="d-grid gap-2">
