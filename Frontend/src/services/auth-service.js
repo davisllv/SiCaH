@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // TODO: adicionar url da API
-const API_URL = "https://apisicah.azurewebsites.net";
+const API_URL = "http://localhost:3000";
 
 class AuthService {
   login(email, password) {
@@ -22,6 +22,7 @@ class AuthService {
       if (error.message.includes('404')) {
         response.message = error.response.data.message;
       } else {
+        console.log(error.message)
         response.message = 'Verifique sua conexão com a internet e tente novamente';
       }
 

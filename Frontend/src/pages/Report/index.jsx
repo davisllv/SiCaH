@@ -8,7 +8,7 @@ export default function Report() {
   const [emotions, setEmotions] = useState([]);
   const [selectedImage, setSelectedImage] = useState([]);
   const { notification } = App.useApp();
-  const emotionApiUrl = 'https://sicah-analysis.azurewebsites.net/api/DetectEmotion';
+  const emotionApiUrl = 'http://localhost:7156/api/DetectEmotion';
 
   const onImageChange = (data) => {
     setSelectedImage(data.fileList);
