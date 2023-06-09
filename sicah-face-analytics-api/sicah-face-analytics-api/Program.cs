@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using sicah_face_analytics_api.Repositories;
 using sicah_face_analytics_api.Shared;
 
 var host = new HostBuilder()
@@ -7,6 +8,7 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         services.AddSingleton<RecognitionClient>();
+        services.AddSingleton<EmotionRepository>();
     })
     .Build();
 
