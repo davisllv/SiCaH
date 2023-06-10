@@ -138,7 +138,7 @@ export default function Report() {
       } else {
         flattenedData.push({
           x: key.charAt(0).toUpperCase() + key.slice(1),
-          total: value[0].Total
+          total: value[0].Total,
         });
       }
     }
@@ -156,7 +156,8 @@ export default function Report() {
       for (const [key1, value1] of Object.entries(value)) {
         flattenedData.push({
           x: dateType === 'week' ? weekDays[+key1] : key1,
-          total: value1.Total
+          total: value1.Total,
+          legend: key1.charAt(0).toUpperCase() + key1.slice(1),
         });
       }
 
