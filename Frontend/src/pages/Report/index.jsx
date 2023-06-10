@@ -157,7 +157,7 @@ export default function Report() {
         flattenedData.push({
           x: dateType === 'week' ? weekDays[+key1] : key1,
           total: value1.Total,
-          legend: key1.charAt(0).toUpperCase() + key1.slice(1),
+          legend: key.charAt(0).toUpperCase() + key.slice(1),
         });
       }
 
