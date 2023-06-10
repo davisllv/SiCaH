@@ -17,5 +17,13 @@
             { "DISGUSTED", "Aborrecido" },
             { "SAD", "Triste" }
         };
+
+        public enum DateType
+        {
+            day,
+            week,
+            month,
+            year
+        }
     }
 }
