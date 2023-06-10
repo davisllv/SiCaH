@@ -12,6 +12,7 @@ import EditCompany from "./pages/Company/Edit";
 import Integration from "./pages/Integration";
 import Logout from "./pages/Logout";
 import Report from "./pages/Report";
+import DetectEmotion from "./pages/Report/DetectEmotion";
 
 function EntryComponent() {
   const user = localStorage.getItem("user")
@@ -46,6 +47,7 @@ function EntryComponent() {
           <Route path="company/edit/:id" element={<EditCompany />}></Route>
           <Route path="company/details/:id" element={<EditCompany />}></Route>
           <Route path="report" element={<Report />}></Route>
+          <Route path="report/detect" element={<DetectEmotion />}></Route>
           <Route path="Logout" element={<Logout />} />
           <Route
             path="*"

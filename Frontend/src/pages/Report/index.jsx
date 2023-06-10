@@ -1,93 +1,115 @@
 import './style.css';
-import { useState } from 'react';
-import { InboxOutlined } from '@ant-design/icons/lib/icons';
-import { App, List, Form } from 'antd';
-import Dragger from 'antd/es/upload/Dragger';
+import { useEffect, useState } from 'react';
+import { Spin, DatePicker, Select } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import emotionService from '../../services/emotion-service';
+import EmptyResult from '../../assets/empty-result.jpg';
 
 export default function Report() {
-  const [emotions, setEmotions] = useState([]);
-  const [selectedImage, setSelectedImage] = useState([]);
-  const { notification } = App.useApp();
-  const emotionApiUrl = 'http://localhost:7156/api/DetectEmotion';
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedOption, setSelectedOption] = useState('day');
+  const [calendarType, setCalendarType] = useState('');
+  const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
 
-  const onImageChange = (data) => {
-    setSelectedImage(data.fileList);
-    if (data.file.status === 'done') {
-      notification.success({
-        message: 'Sucesso',
-        description: 'Veja abaixo o resultado da análise da imagem',
-      });
-
-      setEmotions(data.file.response);
+  const selectOptions = [
+    {
+      value: 'day',
+      label: 'Dia'
+    },
+    {
+      value: 'week',
+      label: 'Semana'
+    },
+    {
+      value: 'month',
+      label: 'Mês'
+    },
+    {
+      value: 'year',
+      label: 'Ano'
     }
-    if (data.file.status === 'error') {
-      notification.error({
-        message: 'Erro',
-        description: 'Erro ao análisar imagem',
-      });
+  ]
 
-      setEmotions(data.file.response);
+  const dateChanged = (date) => {
+    setSelectedDate(date);
+    handleDateFormat(selectedOption);
+    fetchData(dayjs(date).format('YYYY-MM-DD'));
+  }
+
+  const reportTypeChanged = (data) => {
+    setCalendarType(data.key);
+    setSelectedOption(data.key);
+    handleDateFormat(data.key);
+  }
+
+  const weekFormat = 'DD/MM';
+  const customWeekStartEndFormat = (value) => {
+    return `${dayjs(value).startOf('week').format(weekFormat)} ~ ${dayjs(value)
+      .endOf('week')
+      .format(weekFormat)} - ${dayjs(value).format('YYYY')}`;
+  }
+
+  const handleDateFormat = (type) => {
+    switch (type) {
+      case 'day':
+        setDateFormat('DD/MM/YYYY');
+        break;
+
+      case 'week':
+        setDateFormat(customWeekStartEndFormat(selectedDate));
+        break;
+
+      default:
+        break;
     }
   }
 
-  const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
-  };
+  const fetchData = (date) => {
+    setLoading(true);
+    emotionService.getEmotionsReport(date).then((response) => {
+      setData(response.data);
+      setLoading(false);
+    })
+  }
 
-  const props = {
-    name: 'file',
-    action: emotionApiUrl,
-    multiple: false,
-  };
+  useEffect(() => {
+    fetchData(dayjs(selectedDate).format('YYYY-MM-DD'));
+  }, []);
 
   return (
     <div className="user-container">
       <div className="dflex">
         <h2>Relatórios</h2>
       </div>
-      <div className="face-container flex-column">
-        <Form
-          layout="vertical"
-          className="login_form"
-          size="large"
-        >
-          <Form.Item>
-            <Dragger {...props} onPreview={onPreview} onChange={onImageChange} fileList={selectedImage} listType="picture">
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <p className="ant-upload-text">Clique ou arraste para cá a imagem a ser analisada</p>
-            </Dragger>
-          </Form.Item>
-        </Form>
-        {emotions.length > 0 &&
-          <List style={{ width: '40%' }}
-            header={<h3>Resultado da análise</h3>}
-            itemLayout="vertical"
-            dataSource={emotions}
-            renderItem={item => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={null}
-                  title={item.emotion}
-                  description={'Confiança: ' + item.confidence + '%'}
-                />
-              </List.Item>
-            )}
+      {loading &&
+        <div style={{ flex: 0.8, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Spin size='large' indicator={<LoadingOutlined style={{ fontSize: 60 }} spin />} />
+        </div>
+      }
+      {!loading &&
+        <div>
+          <Select
+            defaultValue={selectedOption}
+            onChange={reportTypeChanged}
+            options={selectOptions}
+            labelInValue={true}
+            style={{ width: 100, marginRight: '1rem' }}
           />
-        }
-      </div>
+          <DatePicker defaultValue={selectedDate} format={dateFormat} onChange={dateChanged} picker={calendarType} />
+          {data.length === 0 &&
+            <div className="empty-result">
+              <img src={EmptyResult} alt="Nenhum resultado foi encontrado" />
+              <p>Nenhum relatório encontrado</p>
+            </div>
+          }
+
+          {data.length > 0 && <div>
+          </div>}
+        </div>
+      }
     </div>
   )
 }

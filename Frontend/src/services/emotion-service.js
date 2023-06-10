@@ -10,6 +10,13 @@ class EmotionService {
         }
       }).catch((error) => error);
   }
+
+  getEmotionsReport(date) {
+    return axios.get(EMOTION_API_URL + `/getemotionsreport?datetime=${date}`)
+      .then((response) => {
+        return response;
+      }).catch((error) => error);
+  }
 }
 
 const emotionService = new EmotionService();
