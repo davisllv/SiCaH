@@ -20,19 +20,9 @@ namespace sicah_face_analytics_api.Functions
         public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
             var dateTime = DateTime.Parse(req.Query["datetime"]);
-            var hasType = Enum.TryParse(req.Query["type"], out Constants.DateType datetype);
-            string resultAsJson;
-            if (!hasType)
-            {
-                var result = _emotionRepository.GetEmotionsReport(dateTime);
-                resultAsJson = JsonConvert.SerializeObject(result);
-            }
-            else
-            {
-                var result = _emotionRepository.GetEmotionsReportByType(dateTime, datetype);
-                resultAsJson = JsonConvert.SerializeObject(result);
-            }
-
+            Enum.TryParse(req.Query["type"], out Constants.DateType datetype);
+            var result = _emotionRepository.GetEmotionsReportByType(dateTime, datetype);
+            string resultAsJson = JsonConvert.SerializeObject(result);
             return Factory.HttpResponseDataFactory(req, HttpStatusCode.OK, resultAsJson, Constants.ContentType, Constants.ContentTypeJson);
         }
     }

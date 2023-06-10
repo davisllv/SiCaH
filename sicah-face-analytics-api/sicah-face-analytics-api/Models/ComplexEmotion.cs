@@ -31,7 +31,7 @@ namespace sicah_face_analytics_api.Models
 
     public class Data
     {
-        [JsonProperty("descricao")]
+        [JsonProperty("x")]
         public required string XValue { get; set; }
 
         public int Total { get; set; }
