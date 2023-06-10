@@ -1,10 +1,12 @@
 import './style.css';
 import { useState } from 'react';
 import { InboxOutlined } from '@ant-design/icons/lib/icons';
-import { App, List, Form } from 'antd';
+import { App, List, Form, Button } from 'antd';
 import Dragger from 'antd/es/upload/Dragger';
+import { useNavigate } from 'react-router-dom';
 
 export default function Report() {
+  const navigate = useNavigate();
   const [emotions, setEmotions] = useState([]);
   const [selectedImage, setSelectedImage] = useState([]);
   const { notification } = App.useApp();
@@ -28,6 +30,10 @@ export default function Report() {
 
       setEmotions(data.file.response);
     }
+  }
+
+  const navigateBack = () => {
+    navigate('/report');
   }
 
   const onPreview = async (file) => {
@@ -54,7 +60,7 @@ export default function Report() {
   return (
     <div className="user-container">
       <div className="dflex">
-        <h2>Relatórios</h2>
+        <h2>Detectar emoção a partir de imagem</h2>
       </div>
       <div className="face-container flex-column">
         <Form
@@ -88,6 +94,7 @@ export default function Report() {
           />
         }
       </div>
+      <Button type="primary" htmlType="button" style={{ width: '130px' }} onClick={navigateBack}>Voltar</Button>
     </div>
   )
 }

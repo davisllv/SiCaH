@@ -11,8 +11,8 @@ class EmotionService {
       }).catch((error) => error);
   }
 
-  getEmotionsReport(date) {
-    return axios.get(EMOTION_API_URL + `/getemotionsreport?datetime=${date}`)
+  getEmotionsReport(date, type) {
+    return axios.get(EMOTION_API_URL + `/getemotionsreport?datetime=${date}&type=${type}`)
       .then((response) => {
         return response;
       }).catch((error) => error);
