@@ -14,19 +14,40 @@ class UserService {
         if (response.data) {
           return response.data;
         }
-      }).catch((error) => error);
+      }).catch((error) => {
+        if (error.message.includes('401')) {
+          localStorage.clear();
+          window.location.reload();
+        }
+
+        return error;
+      });
   }
 
   createUser(user) {
     return axios.post(API_URL + "/usuario", user, {
       headers: authHeader()
-    }).catch((error) => error);
+    }).catch((error) => {
+      if (error.message.includes('401')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+
+      return error;
+    });
   }
 
   updateUser(id, user) {
     return axios.put(API_URL + "/usuario/" + id, user, {
       headers: authHeader()
-    }).catch((error) => error);
+    }).catch((error) => {
+      if (error.message.includes('401')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+
+      return error;
+    });
   }
 
   findUser(id) {
@@ -37,13 +58,27 @@ class UserService {
         if (response.data) {
           return response.data;
         }
-      }).catch((error) => error);
+      }).catch((error) => {
+        if (error.message.includes('401')) {
+          localStorage.clear();
+          window.location.reload();
+        }
+
+        return error;
+      });
   }
 
   deleteUser(id) {
     return axios.delete(API_URL + "/usuario/" + id, {
       headers: authHeader()
-    }).catch((error) => error);
+    }).catch((error) => {
+      if (error.message.includes('401')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+
+      return error;
+    });
   }
 }
 

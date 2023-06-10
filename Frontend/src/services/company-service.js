@@ -11,19 +11,40 @@ class CompanyService {
         if (response.data) {
           return response.data;
         }
-      }).catch((error) => error);
+      }).catch((error) => {
+        if (error.message.includes('401')) {
+          localStorage.clear();
+          window.location.reload();
+        }
+
+        return error;
+      });
   }
 
   createCompany(user) {
     return axios.post(API_URL + "/empresa", user, {
       headers: authHeader()
-    }).catch((error) => error);
+    }).catch((error) => {
+      if (error.message.includes('401')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+
+      return error;
+    });
   }
 
   updateCompany(id, user) {
     return axios.put(API_URL + "/empresa/" + id, user, {
       headers: authHeader()
-    }).catch((error) => error);
+    }).catch((error) => {
+      if (error.message.includes('401')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+
+      return error;
+    });
   }
 
   findCompany(id) {
@@ -34,13 +55,27 @@ class CompanyService {
         if (response.data) {
           return response.data;
         }
-      }).catch((error) => error);
+      }).catch((error) => {
+        if (error.message.includes('401')) {
+          localStorage.clear();
+          window.location.reload();
+        }
+
+        return error;
+      });
   }
 
   deleteCompany(id) {
     return axios.delete(API_URL + "/empresa/" + id, {
       headers: authHeader()
-    }).catch((error) => error);
+    }).catch((error) => {
+      if (error.message.includes('401')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+
+      return error;
+    });
   }
 
   getAutocomplete(nome) {
@@ -51,7 +86,14 @@ class CompanyService {
         if (response.data) {
           return response.data;
         }
-      }).catch((error) => error);
+      }).catch((error) => {
+        if (error.message.includes('401')) {
+          localStorage.clear();
+          window.location.reload();
+        }
+
+        return error;
+      });
   }
 }
 
