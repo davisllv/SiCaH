@@ -39,11 +39,9 @@ export default function MenuComponent() {
   const items = [
     getItem("Home", "/home", <HomeFilled />),
     getItem("Relatórios", "/report", <FileTextFilled />),
-    getItem("Equipamentos", "/equipament", <ToolFilled />),
     getItem("Empresas", "/company", <BankOutlined />),
     getItem("Usuários", "/user", <UserOutlined />),
     getItem("Integrações", "/integration", <ApiFilled />),
-    // getItem("Imagens", "/images", <CameraFilled />),
     getItem("Sair", "/logout", <LogoutOutlined />)
   ];
 
