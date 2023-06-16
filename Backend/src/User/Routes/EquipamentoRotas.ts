@@ -4,7 +4,8 @@ import { autenticarJWT } from "../../lib/authJwt";
 
 const Rota = Router();
 
-Rota.get("/", autenticarJWT, EquipamentoController.show);
+Rota.get("/", autenticarJWT, EquipamentoController.showAll);
+Rota.get("/:id", autenticarJWT, EquipamentoController.show);
 Rota.put("/:id", autenticarJWT, EquipamentoController.edit);
 Rota.delete("/:id", autenticarJWT, EquipamentoController.delete);
 Rota.post("/", autenticarJWT, EquipamentoController.create);
