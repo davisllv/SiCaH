@@ -11,8 +11,8 @@ export default function Report() {
   const [emotions, setEmotions] = useState([]);
   const [selectedImage, setSelectedImage] = useState([]);
   const { notification } = App.useApp();
-  const API_URL = LOCAL_EMOTION_API_URL;
-  // const API_URL =  REMOTE_EMOTION_API_URL;
+  // const API_URL = LOCAL_EMOTION_API_URL;
+  const API_URL = REMOTE_EMOTION_API_URL;
 
   const onImageChange = (data) => {
     setSelectedImage(data.fileList);

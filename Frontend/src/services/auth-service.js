@@ -1,8 +1,8 @@
 import axios from "axios";
 import { LOCAL_API_URL, REMOTE_API_URL } from "../helpers/constants";
 
-const API_URL = LOCAL_API_URL;
-// const API_URL = REMOTE_API_URL;
+// const API_URL = LOCAL_API_URL;
+const API_URL = REMOTE_API_URL;
 
 class AuthService {
   login(email, password) {
