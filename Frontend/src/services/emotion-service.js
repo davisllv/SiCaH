@@ -1,5 +1,8 @@
 import axios from "axios";
-const EMOTION_API_URL = "https://sicah-analysis.azurewebsites.net/api";
+import { LOCAL_EMOTION_API_URL, REMOTE_EMOTION_API_URL } from "../helpers/constants";
+
+const EMOTION_API_URL = LOCAL_EMOTION_API_URL;
+// const EMOTION_API_URL = REMOTE_EMOTION_API_URL;
 
 class EmotionService {
   getEmotion(data) {

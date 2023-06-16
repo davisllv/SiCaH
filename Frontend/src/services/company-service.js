@@ -1,6 +1,9 @@
 import axios from "axios";
 import authHeader from "./auth-header";
-const API_URL = "https://apisicah.azurewebsites.net";
+import { LOCAL_API_URL, REMOTE_API_URL } from "../helpers/constants";
+
+const API_URL = LOCAL_API_URL;
+// const API_URL = REMOTE_API_URL;
 
 class CompanyService {
   getCompanies(take, skip) {

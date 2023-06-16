@@ -5,9 +5,9 @@ import { LOCAL_API_URL, REMOTE_API_URL } from "../helpers/constants";
 const API_URL = LOCAL_API_URL;
 // const API_URL = REMOTE_API_URL;
 
-class UserService {
+class EquipamentService {
   getUsers(take, skip, companyId) {
-    return axios.get(API_URL + `/usuario?skip=${skip}&take=${take}&companyId=${companyId}`, {
+    return axios.get(API_URL + `/equipamento?skip=${skip}&take=${take}&companyId=${companyId}`, {
       headers: authHeader()
     })
       .then((response) => {
@@ -27,8 +27,8 @@ class UserService {
       });
   }
 
-  createUser(user) {
-    return axios.post(API_URL + "/usuario", user, {
+  createEquipament(user) {
+    return axios.post(API_URL + "/equipamento", user, {
       headers: authHeader()
     }).catch((error) => {
       if (error.message.includes('401')) {
@@ -40,8 +40,8 @@ class UserService {
     });
   }
 
-  updateUser(id, user) {
-    return axios.put(API_URL + "/usuario/" + id, user, {
+  updateEquipament(id, user) {
+    return axios.put(API_URL + "/equipamento/" + id, user, {
       headers: authHeader()
     }).catch((error) => {
       if (error.message.includes('401')) {
@@ -53,8 +53,8 @@ class UserService {
     });
   }
 
-  findUser(id) {
-    return axios.get(API_URL + "/usuario/" + id, {
+  findEquipament(id) {
+    return axios.get(API_URL + "/equipamento/" + id, {
       headers: authHeader()
     })
       .then((response) => {
@@ -71,8 +71,8 @@ class UserService {
       });
   }
 
-  deleteUser(id) {
-    return axios.delete(API_URL + "/usuario/" + id, {
+  deleteEquipament(id) {
+    return axios.delete(API_URL + "/equipamento/" + id, {
       headers: authHeader()
     }).catch((error) => {
       if (error.message.includes('401')) {
@@ -85,5 +85,5 @@ class UserService {
   }
 }
 
-const userService = new UserService();
+const userService = new EquipamentService();
 export default userService;
