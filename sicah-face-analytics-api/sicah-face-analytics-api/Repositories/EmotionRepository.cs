@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using sicah_face_analytics_api.Models;
 using System.Data;
+using System.Text;
 using static sicah_face_analytics_api.Shared.Constants;
 
 namespace sicah_face_analytics_api.Repositories
@@ -191,6 +192,46 @@ namespace sicah_face_analytics_api.Repositories
             }
 
             return null;
+        }
+
+        public Dictionary<string, dynamic> GetEmotionsDashboard()
+        {
+            var dic = new Dictionary<string, dynamic>();
+            var sqlConnection = new SqlConnection(_connectionString);
+            try
+            {
+                var query = new StringBuilder()
+                    .AppendLine("SELECT TOP 1 COUNT(emocao) 'total', emocao FROM humor")
+                    .AppendLine("GROUP BY emocao")
+                    .AppendLine("ORDER BY total DESC")
+                    .AppendLine("SELECT COUNT(id) 'totalEmotions' FROM Humor").ToString();
+
+                var command = new SqlCommand(query, sqlConnection);
+                sqlConnection.Open();
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    var higherRecurrence = reader["emocao"].ToString();
+                    dic.Add("maiorRecorrencia", higherRecurrence ?? "Nenhuma emoção detectada");
+                }
+
+                reader.NextResult();
+                while (reader.Read())
+                {
+                    var totalEmotions = int.Parse(reader["totalEmotions"].ToString());
+                    dic.Add("totalEmocoes", totalEmotions);
+                }
+
+                reader.Close();
+                return dic;
+            }
+            finally
+            {
+                if (sqlConnection.State == ConnectionState.Open)
+                {
+                    sqlConnection.Close();  
+                }
+            }
         }
 
         private ComplexEmotion HandleComplexEmotion(DateTime datetime, DateType dateType)
