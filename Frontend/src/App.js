@@ -9,10 +9,11 @@ import User from "./pages/User";
 import EditUser from "./pages/User/Edit";
 import Company from "./pages/Company";
 import EditCompany from "./pages/Company/Edit";
-import Integration from "./pages/Integration";
 import Logout from "./pages/Logout";
 import Report from "./pages/Report";
 import DetectEmotion from "./pages/Report/DetectEmotion";
+import Equipament from "./pages/Equipament"
+import EquipamentEdit from "./pages/Equipament/Edit";
 
 function EntryComponent() {
   const user = localStorage.getItem("user")
@@ -36,7 +37,6 @@ function EntryComponent() {
       <div className="dflex">
         <Menu />
         <Routes>
-          <Route path="integration" element={<Integration />} />
           <Route path="home" element={<Home />} />
           <Route path="user" element={<User />}></Route>
           <Route path="user/create" element={<EditUser />}></Route>
@@ -48,6 +48,10 @@ function EntryComponent() {
           <Route path="company/details/:id" element={<EditCompany />}></Route>
           <Route path="report" element={<Report />}></Route>
           <Route path="report/detect" element={<DetectEmotion />}></Route>
+          <Route path="equipament" element={<Equipament />}></Route>
+          <Route path="equipament/create" element={<EquipamentEdit />}></Route>
+          <Route path="equipament/edit/:id" element={<EquipamentEdit />}></Route>
+          <Route path="equipament/details/:id" element={<EquipamentEdit />}></Route>
           <Route path="Logout" element={<Logout />} />
           <Route
             path="*"
