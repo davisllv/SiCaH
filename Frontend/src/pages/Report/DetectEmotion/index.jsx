@@ -4,13 +4,15 @@ import { InboxOutlined } from '@ant-design/icons/lib/icons';
 import { App, List, Form, Button } from 'antd';
 import Dragger from 'antd/es/upload/Dragger';
 import { useNavigate } from 'react-router-dom';
+import { LOCAL_EMOTION_API_URL, REMOTE_EMOTION_API_URL } from '../../../helpers/constants';
 
 export default function Report() {
   const navigate = useNavigate();
   const [emotions, setEmotions] = useState([]);
   const [selectedImage, setSelectedImage] = useState([]);
   const { notification } = App.useApp();
-  const emotionApiUrl = 'https://sicah-analysis.azurewebsites.net/api/DetectEmotion';
+  const API_URL = LOCAL_EMOTION_API_URL;
+  // const API_URL =  REMOTE_EMOTION_API_URL;
 
   const onImageChange = (data) => {
     setSelectedImage(data.fileList);
@@ -28,8 +30,13 @@ export default function Report() {
         description: 'Erro ao análisar imagem',
       });
 
-      setEmotions(data.file.response);
+      setEmotions([]);
     }
+  }
+
+  const handleRemove = () => {
+    setSelectedImage([]);
+    setEmotions([]);
   }
 
   const navigateBack = () => {
@@ -53,7 +60,7 @@ export default function Report() {
 
   const props = {
     name: 'file',
-    action: emotionApiUrl,
+    action: API_URL + '/DetectEmotion',
     multiple: false,
   };
 
@@ -69,7 +76,14 @@ export default function Report() {
           size="large"
         >
           <Form.Item>
-            <Dragger {...props} onPreview={onPreview} onChange={onImageChange} fileList={selectedImage} listType="picture">
+            <Dragger
+              {...props}
+              onPreview={onPreview}
+              onChange={onImageChange}
+              fileList={selectedImage}
+              listType="picture"
+              onRemove={handleRemove}
+            >
               <p className="ant-upload-drag-icon">
                 <InboxOutlined />
               </p>

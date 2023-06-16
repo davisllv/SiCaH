@@ -20,6 +20,13 @@ class EmotionService {
         return response;
       }).catch((error) => error);
   }
+
+  getDashboard() {
+    return axios.get(EMOTION_API_URL + `/getdashboard`)
+      .then((response) => {
+        return response;
+      }).catch((error) => error);
+  }
 }
 
 const emotionService = new EmotionService();
