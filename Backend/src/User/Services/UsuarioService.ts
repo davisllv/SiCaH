@@ -8,9 +8,7 @@ class UsuarioService {
     SELECT id, nome, email, permite_foto, COUNT(*) OVER() as Total FROM banco01.dbo.usuario 
     ORDER BY nome
     OFFSET ${skip} ROWS FETCH NEXT ${take} ROWS ONLY`;
-    console.log('query', query)
     let usuarios: any = await DataBaseConection.Executar("select", query);
-    console.log(usuarios[0])
     const total: any = usuarios[0].Total;
     return { users: usuarios, total };
   }
@@ -59,13 +57,8 @@ class UsuarioService {
   }
 
   public async login (data: any): Promise<{}> {
-
     let query = `SELECT id,nomeUsuario,id_empresa, email FROM usuario WHERE email = '${data.email}' and senha = '${md5(data.password)}'`
-
     let result: any = await DataBaseConection.Executar("select", query);
-    console.log('result', result[0])
-
-
     return result[0];
   }
 
