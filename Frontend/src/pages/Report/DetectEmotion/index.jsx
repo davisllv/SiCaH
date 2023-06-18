@@ -17,12 +17,27 @@ export default function Report() {
   const onImageChange = (data) => {
     setSelectedImage(data.fileList);
     if (data.file.status === 'done') {
+      if (data.file.response === 'Nenhum rosto foi encontrado') {
+        notification.error({
+          message: 'Erro',
+          description: 'Nenhum rosto foi encontrado',
+        });
+        const errorEmotion = {
+          emotion: 'Erro',
+          confidence: 'Nenhum rosto foi encontrado',
+        }
+
+        setEmotions(oldArray => [...oldArray, errorEmotion]);
+        return;
+      }
+
       notification.success({
         message: 'Sucesso',
         description: 'Veja abaixo o resultado da análise da imagem',
       });
 
-      setEmotions(data.file.response);
+      data.file.response[0].confidence = 'Confiança: ' + data.file.response[0].confidence + '%';
+      setEmotions(oldArray => [...oldArray, data.file.response[0]]);
     }
     if (data.file.status === 'error') {
       notification.error({
@@ -101,7 +116,7 @@ export default function Report() {
                 <List.Item.Meta
                   avatar={null}
                   title={item.emotion}
-                  description={'Confiança: ' + item.confidence + '%'}
+                  description={item.confidence}
                 />
               </List.Item>
             )}
